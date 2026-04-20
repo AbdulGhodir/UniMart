@@ -9,3 +9,5 @@ val SurfaceColor = Color(0xFFB9DCFF)
 val TextColor = Color(0xFF000000)
 val TextOnPrimaryColor = Color(0xFFF8FBFF)
 val TextMuted = Color(0x80000000)
+
+val BorderColor = Color(0x1F000000)

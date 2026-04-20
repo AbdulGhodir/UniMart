@@ -18,7 +18,8 @@ private val AppColorScheme = lightColorScheme(
     surface = SurfaceColor,
     onPrimary = TextOnPrimaryColor,
     onSecondary = TextMuted,
-    onTertiary = TextColor
+    onTertiary = TextColor,
+    outline = BorderColor
 )
 
 @Composable
