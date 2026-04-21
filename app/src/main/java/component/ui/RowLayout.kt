@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -31,7 +32,7 @@ import model.Barang
 @Composable
 fun RowLayout(barang: Barang) {
     Card(
-        modifier = Modifier.width(130.dp),
+        modifier = Modifier.width(150.dp),
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 5.dp),
         colors = CardDefaults.cardColors(Color.White),
@@ -48,7 +49,7 @@ fun RowLayout(barang: Barang) {
                 contentDescription = barang.nama,
                 modifier = Modifier
                     .clip(RoundedCornerShape(10.dp))
-                    .fillMaxWidth()
+                    .fillMaxSize()
                     .background(MaterialTheme.colorScheme.secondary)
                     .height(150.dp)
                     .shadow(

@@ -7,7 +7,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
@@ -29,7 +28,6 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
@@ -37,7 +35,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.getValue
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -51,6 +48,11 @@ import java.text.NumberFormat
 import java.util.Locale
 import component.pages.Dashboard
 import component.pages.History
+import component.pages.Pencarian
+import component.pages.Profile
+import component.pages.EditProfile
+import component.pages.KelolaProduk
+import component.pages.TambahProduk
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -99,7 +101,7 @@ class MainActivity : ComponentActivity() {
 fun AppNavigation(modifier: Modifier, navController: NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = "history"
+        startDestination = "home"
     ) {
         composable("home") {
             Dashboard(
@@ -109,9 +111,7 @@ fun AppNavigation(modifier: Modifier, navController: NavHostController) {
         }
 
         composable("search") {
-            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(text = "Halaman Pencarian Belum Dibuat", fontSize = 20.sp, fontWeight = FontWeight.Bold)
-            }
+            Pencarian(modifier = modifier)
         }
 
         composable("history") {
@@ -122,9 +122,30 @@ fun AppNavigation(modifier: Modifier, navController: NavHostController) {
         }
 
         composable("profile") {
-            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(text = "Halaman Profil Belum Dibuat", fontSize = 20.sp, fontWeight = FontWeight.Bold)
-            }
+            Profile(
+                modifier = modifier,
+                navController = navController
+            )
+        }
+
+        composable("editProfile") {
+            EditProfile(
+                modifier = modifier,
+                navController = navController
+            )
+        }
+
+        composable("kelolaProduk") {
+            KelolaProduk(
+                modifier = modifier,
+                navController = navController
+            )
+        }
+        composable("tambahProduk") {
+            TambahProduk(
+                modifier = modifier,
+                navController = navController
+            )
         }
     }
 }
@@ -196,7 +217,7 @@ fun Navbar(navController: NavController) {
 
             label = {
                 Text(
-                    text = "Pencarian",
+                    text = "Cari",
                     fontWeight = if (currentRoute == "search") FontWeight.Bold else FontWeight.Normal,
                     modifier = Modifier.offset(y = (-5).dp)
                 )
