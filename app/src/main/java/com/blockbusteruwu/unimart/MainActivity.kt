@@ -53,6 +53,7 @@ import component.pages.Profile
 import component.pages.EditProfile
 import component.pages.KelolaProduk
 import component.pages.TambahProduk
+import component.pages.Favorite
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -101,7 +102,7 @@ class MainActivity : ComponentActivity() {
 fun AppNavigation(modifier: Modifier, navController: NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = "home"
+        startDestination = "favorite"
     ) {
         composable("home") {
             Dashboard(
@@ -143,6 +144,12 @@ fun AppNavigation(modifier: Modifier, navController: NavHostController) {
         }
         composable("tambahProduk") {
             TambahProduk(
+                modifier = modifier,
+                navController = navController
+            )
+        }
+        composable("favorite") {
+            Favorite(
                 modifier = modifier,
                 navController = navController
             )
