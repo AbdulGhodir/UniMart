@@ -54,6 +54,8 @@ import component.pages.EditProfile
 import component.pages.KelolaProduk
 import component.pages.TambahProduk
 import component.pages.Favorite
+import component.pages.Register
+import component.pages.WelcomePage
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,23 +73,28 @@ class MainActivity : ComponentActivity() {
         setContent {
             UniMartTheme {
                 val navController = rememberNavController()
+                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                val currentRoute = navBackStackEntry?.destination?.route
+                val noNavBar = listOf("splashScreen", "welcomePage", "login", "register")
 
                 Scaffold(
                     modifier = Modifier
                         .fillMaxSize(),
-                    bottomBar = { Navbar(navController) },
+                    bottomBar = { if (currentRoute !in noNavBar){ Navbar(navController) } },
                     floatingActionButton = {
-                        FloatingActionButton(
-                            onClick = { },
-                            shape = CircleShape,
-                            modifier = Modifier
-                                .size(60.dp)
-                                .offset(y = 60.dp)
-                                .border(width = 3.dp, color = Color.White, shape = CircleShape),
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = Color.White,
+                        if (currentRoute !in noNavBar){
+                            FloatingActionButton(
+                                onClick = { },
+                                shape = CircleShape,
+                                modifier = Modifier
+                                    .size(60.dp)
+                                    .offset(y = 60.dp)
+                                    .border(width = 3.dp, color = Color.White, shape = CircleShape),
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = Color.White,
 
-                            ) { Icon(Icons.Filled.Add, contentDescription = "Pembayaran") }
+                                ) { Icon(Icons.Filled.Add, contentDescription = "Pembayaran") }
+                        }
                     },
                     floatingActionButtonPosition = FabPosition.Center
                 ) { innerPadding ->
@@ -102,8 +109,22 @@ class MainActivity : ComponentActivity() {
 fun AppNavigation(modifier: Modifier, navController: NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = "favorite"
+        startDestination = "welcomePage"
     ) {
+        composable("welcomePage") {
+            WelcomePage(
+                modifier = modifier,
+                navController = navController
+            )
+        }
+
+        composable("register") {
+            Register(
+                modifier = modifier,
+                navController = navController
+            )
+        }
+
         composable("home") {
             Dashboard(
                 modifier = modifier,
@@ -334,28 +355,33 @@ fun Int.formatRibuan(): String {
 @Composable
 fun PreviewApp() {
     UniMartTheme {
-        val previewNavbarController = rememberNavController()
+        val navController = rememberNavController()
+        val navBackStackEntry by navController.currentBackStackEntryAsState()
+        val currentRoute = navBackStackEntry?.destination?.route
+        val noNavBar = listOf("splashScreen", "welcomePage", "login", "register")
 
         Scaffold(
             modifier = Modifier
                 .fillMaxSize(),
-            bottomBar = { Navbar(previewNavbarController) },
+            bottomBar = { if (currentRoute !in noNavBar){ Navbar(navController) } },
             floatingActionButton = {
-                FloatingActionButton(
-                    onClick = { },
-                    shape = CircleShape,
-                    modifier = Modifier
-                        .size(60.dp)
-                        .offset(y = 55.dp)
-                        .border(width = 3.dp, color = Color.White, shape = CircleShape),
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = Color.White,
+                if (currentRoute !in noNavBar){
+                    FloatingActionButton(
+                        onClick = { },
+                        shape = CircleShape,
+                        modifier = Modifier
+                            .size(60.dp)
+                            .offset(y = 60.dp)
+                            .border(width = 3.dp, color = Color.White, shape = CircleShape),
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = Color.White,
 
-                    ) { Icon(Icons.Filled.Add, contentDescription = "Pembayaran") }
+                        ) { Icon(Icons.Filled.Add, contentDescription = "Pembayaran") }
+                }
             },
             floatingActionButtonPosition = FabPosition.Center
         ) { innerPadding ->
-            AppNavigation(modifier = Modifier.padding(innerPadding) , navController = previewNavbarController)
+            AppNavigation(modifier = Modifier.padding(innerPadding) , navController = navController)
         }
     }
 }
