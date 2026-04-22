@@ -93,12 +93,14 @@ fun Dashboard(modifier: Modifier = Modifier, navController: NavController) {
                     )
                 }
 
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_message),
-                    contentDescription = "chat",
-                    tint = MaterialTheme.colorScheme.onPrimary,
-                    modifier = Modifier.size(26.dp)
-                )
+                IconButton(onClick = { navController.navigate("daftarObrolan") }) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_message),
+                        contentDescription = "chat",
+                        tint = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.size(26.dp)
+                    )
+                }
             }
         }
 

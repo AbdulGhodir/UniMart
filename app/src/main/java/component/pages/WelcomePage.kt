@@ -99,7 +99,9 @@ fun WelcomePage(modifier: Modifier = Modifier, navController: NavController){
                 }
                 Spacer(modifier = Modifier.height(15.dp))
                 Button(
-                    onClick = {},
+                    onClick = {
+                        navController.navigate("login")
+                    },
                     modifier = Modifier
                         .fillMaxWidth(),
                     contentPadding = PaddingValues(vertical = 15.dp),

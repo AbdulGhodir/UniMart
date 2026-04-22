@@ -76,6 +76,7 @@ fun Register(modifier: Modifier = Modifier, navController: NavController){
                 var username by remember { mutableStateOf("") }
                 var email by remember { mutableStateOf("") }
                 var password by remember { mutableStateOf("") }
+                var confirmPassword by remember { mutableStateOf("") }
 
                 Column(
                     modifier = Modifier
@@ -181,8 +182,8 @@ fun Register(modifier: Modifier = Modifier, navController: NavController){
                     )
                     Spacer(modifier = Modifier.height(15.dp))
                     TextField(
-                        value = password,
-                        onValueChange = { password = it },
+                        value = confirmPassword,
+                        onValueChange = { confirmPassword = it },
                         modifier = Modifier
                             .fillMaxWidth()
                             .shadow(
@@ -220,7 +221,7 @@ fun Register(modifier: Modifier = Modifier, navController: NavController){
                 }
                 Button(
                     onClick = {
-                        navController.navigate("home")
+                        navController.navigate("login")
                     },
                     modifier = Modifier
                         .fillMaxWidth(),

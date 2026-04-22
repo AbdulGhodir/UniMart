@@ -44,6 +44,7 @@ import com.blockbusteruwu.unimart.ui.theme.PrimaryColor
 import com.blockbusteruwu.unimart.ui.theme.UniMartTheme
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import component.pages.DaftarObrolan
 import java.text.NumberFormat
 import java.util.Locale
 import component.pages.Dashboard
@@ -76,7 +77,7 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentRoute = navBackStackEntry?.destination?.route
-                val noNavBar = listOf("splashScreen", "welcomePage", "login", "register")
+                val noNavBar = listOf("daftarObrolan", "welcomePage", "login", "register")
 
                 Scaffold(
                     modifier = Modifier
@@ -110,7 +111,7 @@ class MainActivity : ComponentActivity() {
 fun AppNavigation(modifier: Modifier, navController: NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = "login"
+        startDestination = "welcomePage"
     ) {
         composable("welcomePage") {
             WelcomePage(
@@ -180,6 +181,13 @@ fun AppNavigation(modifier: Modifier, navController: NavHostController) {
         }
         composable("favorite") {
             Favorite(
+                modifier = modifier,
+                navController = navController
+            )
+        }
+
+        composable("daftarObrolan"){
+            DaftarObrolan(
                 modifier = modifier,
                 navController = navController
             )
