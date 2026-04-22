@@ -56,6 +56,7 @@ import component.pages.TambahProduk
 import component.pages.Favorite
 import component.pages.Register
 import component.pages.WelcomePage
+import component.pages.Login
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -109,7 +110,7 @@ class MainActivity : ComponentActivity() {
 fun AppNavigation(modifier: Modifier, navController: NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = "welcomePage"
+        startDestination = "login"
     ) {
         composable("welcomePage") {
             WelcomePage(
@@ -124,6 +125,14 @@ fun AppNavigation(modifier: Modifier, navController: NavHostController) {
                 navController = navController
             )
         }
+
+        composable("login") {
+            Login(
+                modifier = modifier,
+                navController = navController
+            )
+        }
+
 
         composable("home") {
             Dashboard(
