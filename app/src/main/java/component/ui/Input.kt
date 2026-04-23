@@ -32,7 +32,7 @@ fun Input(modifier: Modifier = Modifier, label: String, text: String, onValueCha
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        Text(text = label.uppercase(), fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color(0x80000000))
+        Text(text = label.uppercase(), fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSecondary)
 
         BasicTextField(
             value = text,

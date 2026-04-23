@@ -53,6 +53,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.blockbusteruwu.unimart.R
+import component.ui.DropdownInput
 import component.ui.Input
 
 @Composable
@@ -68,14 +69,16 @@ fun JualBarang(modifier: Modifier = Modifier, navController: NavController) {
     ) {
         Column(
             modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = 14.dp)
-                .padding(top = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp)
+                .weight(1f),
+            verticalArrangement = Arrangement.spacedBy(5.dp)
         ) {
             Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.primary)
+                    .padding(horizontal = 14.dp, vertical = 20.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(5.dp)
+                horizontalArrangement = Arrangement.spacedBy(7.dp)
             ) {
                 Icon(
                     imageVector = Icons.Filled.Close,
@@ -83,17 +86,18 @@ fun JualBarang(modifier: Modifier = Modifier, navController: NavController) {
                     modifier = Modifier
                         .size(24.dp)
                         .clickable { navController.popBackStack() }
-                        .offset(x = (-5).dp),
+                        .offset(x = (-3).dp),
+                    tint = MaterialTheme.colorScheme.onPrimary,
                 )
 
-                Text(text = "Jual Barang", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                Text(text = "Jual Barang", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimary)
             }
 
             Column(
                 modifier = Modifier
                     .fillMaxHeight()
                     .verticalScroll(rememberScrollState())
-                    .padding(vertical = 16.dp),
+                    .padding(14.dp, 16.dp),
                 verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
                 Card(
@@ -262,60 +266,6 @@ fun JualBarang(modifier: Modifier = Modifier, navController: NavController) {
                 contentPadding = PaddingValues(16.dp)
             ) {
                 Text(text = "UPLOAD BARANG", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun DropdownInput(modifier: Modifier = Modifier, label: String, pilihan: List<String>) {
-    var isExpanded by remember { mutableStateOf(false) }
-    var selectedItem by remember { mutableStateOf(pilihan[0]) }
-
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.Start,
-        verticalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        Text(text = label.uppercase(), fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSecondary)
-
-        ExposedDropdownMenuBox (
-            expanded = isExpanded,
-            onExpandedChange = { isExpanded = it },
-            modifier = Modifier.clip(RoundedCornerShape(14.dp))
-        ) {
-            OutlinedTextField(
-                value = selectedItem,
-                onValueChange = {},
-                readOnly = true,
-                trailingIcon = {
-                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded)
-                },
-                modifier = Modifier
-                    .menuAnchor()
-                    .fillMaxWidth(),
-                shape = RoundedCornerShape(14.dp),
-
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedContainerColor = MaterialTheme.colorScheme.background,
-                    unfocusedContainerColor = MaterialTheme.colorScheme.background,
-                )
-            )
-
-            ExposedDropdownMenu(
-                expanded = isExpanded,
-                onDismissRequest = { isExpanded = false }
-            ) {
-                pilihan.forEach { item ->
-                    DropdownMenuItem(
-                        text = { Text(text = item) },
-                        onClick = {
-                            selectedItem = item
-                            isExpanded = false
-                        },
-                    )
-                }
             }
         }
     }

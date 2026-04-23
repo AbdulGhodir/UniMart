@@ -11,10 +11,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -24,9 +27,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.blockbusteruwu.unimart.R
 
 @Composable
@@ -37,16 +42,15 @@ fun DaftarObrolan(modifier: Modifier = Modifier, navController: NavController){
             .background(MaterialTheme.colorScheme.background)
     ) {
         Column(
-            modifier = Modifier
-                .padding(vertical = 16.dp)
-                .padding(horizontal = 16.dp)
         ) {
             Row(
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.primary)
+                    .padding(horizontal = 16.dp, vertical = 10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Image(
+                Icon(
                     painter = painterResource(id = R.drawable.ic_arrow_back),
                     contentDescription = "back",
                     modifier = Modifier
@@ -55,11 +59,13 @@ fun DaftarObrolan(modifier: Modifier = Modifier, navController: NavController){
                             onClick = {
                                 navController.popBackStack()
                             }
-                        )
+                        ),
+                    tint = MaterialTheme.colorScheme.onPrimary,
                 )
 
                 Text(
                     text = "Daftar obrolan",
+                    color = MaterialTheme.colorScheme.onPrimary,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier
@@ -69,22 +75,27 @@ fun DaftarObrolan(modifier: Modifier = Modifier, navController: NavController){
                 IconButton(
                     onClick = { }
                 ) {
-                    Image(
+                    Icon(
                         painter = painterResource(id = R.drawable.ic_hamburger_kurus),
                         contentDescription = "pilihan",
+                        tint = MaterialTheme.colorScheme.onPrimary,
                     )
                 }
             }
 
-            for (i in 1..5) {
-                Obrolan()
-                Spacer(modifier = Modifier
-                    .height(1.dp)
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.onSecondary))
+            Column(
+                modifier = Modifier
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 16.dp)
+            ) {
+                for (i in 1..25) {
+                    Obrolan()
+                    Spacer(modifier = Modifier
+                        .height(1.dp)
+                        .fillMaxWidth()
+                        .background(MaterialTheme.colorScheme.onSecondary))
+                }
             }
-
-
         }
     }
 }

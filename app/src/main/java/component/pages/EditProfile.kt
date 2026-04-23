@@ -117,7 +117,7 @@ fun EditProfile(modifier: Modifier, navController: NavController) {
                     shape = RoundedCornerShape(16.dp))
                     .border(BorderStroke(2.dp, Color(0x33FFFFFF)), shape = RoundedCornerShape(16.dp)),
                     contentAlignment = Alignment.Center) {
-                    Text(text = "R", color = Color.White)
+                    Text(text = user.username.get(0).uppercase(), color = Color.White)
                     Box(modifier = Modifier.background(Color(0x33FFFFFF), shape = CircleShape)
                         .align(Alignment.BottomEnd)
                         .padding(10.dp),

@@ -101,9 +101,3 @@ fun History(modifier: Modifier = Modifier, navController: NavController) {
         }
     }
 }
-
-@Preview(showBackground = false)
-@Composable
-fun HistoryPreview() {
-    History(navController = rememberNavController())
-}

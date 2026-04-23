@@ -19,8 +19,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -28,6 +31,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,14 +42,23 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.blockbusteruwu.unimart.R
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import model.UserSource
 
 @Composable
 fun Register(modifier: Modifier = Modifier, navController: NavController){
-    Column(
+    var isLoading by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .background(color = MaterialTheme.colorScheme.background),
@@ -219,10 +232,31 @@ fun Register(modifier: Modifier = Modifier, navController: NavController){
                         )
                     )
                 }
+
                 Button(
                     onClick = {
-                        navController.navigate("login")
+                        coroutineScope.launch {
+                            isLoading = true
+                            delay(2000)
+                            isLoading = false
+
+                            if (!username.isEmpty() || !email.isEmpty()) {
+                                UserSource.user.username = username
+                                UserSource.user.email = email
+                            }
+
+                            launch {
+                                snackbarHostState.showSnackbar("Registrasi berhasil!")
+                            }
+
+                            delay(1000)
+
+                            navController.navigate("login") {
+                                popUpTo("register") { inclusive = true }
+                            }
+                        }
                     },
+                    enabled = !isLoading,
                     modifier = Modifier
                         .fillMaxWidth(),
                     contentPadding = PaddingValues(vertical = 15.dp),
@@ -232,13 +266,26 @@ fun Register(modifier: Modifier = Modifier, navController: NavController){
                         contentColor = MaterialTheme.colorScheme.onPrimary
                     )
                 ) {
-                    Text(
-                        text = "Daftar",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+                    if (isLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(20.dp),
+                            color = MaterialTheme.colorScheme.onSecondary,
+                            strokeWidth = 2.dp
+                        )
+
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        Text("Memproses...")
+                    } else {
+                        Text(
+                            text = "Daftar",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
             }
+
             Column(
                 modifier = Modifier
                     .padding(vertical = 20.dp)
@@ -307,5 +354,12 @@ fun Register(modifier: Modifier = Modifier, navController: NavController){
                 }
             }
         }
+
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 60.dp)
+        )
     }
 }

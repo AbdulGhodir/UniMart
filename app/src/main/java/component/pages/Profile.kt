@@ -196,7 +196,13 @@ fun Profile(modifier: Modifier, navController: NavController) {
                     .padding(PaddingValues(horizontal = 6.dp, vertical = 6.dp)),
                     horizontalArrangement = Arrangement.spacedBy(14.dp),
                     verticalAlignment = Alignment.CenterVertically) {
-                    TextButton(onClick = { }) {
+                    TextButton(onClick = {
+                        navController.navigate("favorite") {
+                            popUpTo(navController.graph.startDestinationId) { saveState = true }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }) {
                         Icon(imageVector = Icons.Default.Favorite, contentDescription = "Favorit", tint = Color(0xFFFFFFFF), modifier = Modifier.size(42.dp)
                             .clip(RoundedCornerShape(10.dp))
                             .background(

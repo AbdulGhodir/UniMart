@@ -5,6 +5,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -54,6 +58,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
@@ -66,6 +71,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -86,13 +92,14 @@ import component.pages.Pencarian
 import component.pages.Profile
 import component.pages.EditProfile
 import component.pages.KelolaProduk
-import component.pages.TambahProduk
 import component.pages.Favorite
 import component.pages.JualBarang
 import component.pages.Register
 import component.pages.WelcomePage
 import component.pages.Login
+import component.pages.SplashScreen
 import component.ui.Input
+import kotlinx.coroutines.delay
 import model.BarangSource
 
 
@@ -113,8 +120,8 @@ class MainActivity : ComponentActivity() {
             UniMartTheme {
                 val navController = rememberNavController()
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
-                val currentRoute = navBackStackEntry?.destination?.route ?: "welcomePage"
-                val noNavBar = listOf("welcomePage", "login", "register", "daftarObrolan", "detailProduk/{id}", "favorite", "jualProduk")
+                val currentRoute = navBackStackEntry?.destination?.route ?: "splashScreen"
+                val noNavBar = listOf("splashScreen", "welcomePage", "login", "register", "daftarObrolan", "detailProduk/{id}", "favorite", "jualProduk")
 
                 Scaffold(
                     modifier = Modifier
@@ -148,8 +155,15 @@ class MainActivity : ComponentActivity() {
 fun AppNavigation(modifier: Modifier, navController: NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = "welcomePage"
+        startDestination = "splashScreen"
     ) {
+        composable("splashScreen") {
+            SplashScreen(
+                modifier = modifier,
+                navController = navController
+            )
+        }
+
         composable("welcomePage") {
             WelcomePage(
                 modifier = modifier,
@@ -216,12 +230,6 @@ fun AppNavigation(modifier: Modifier, navController: NavHostController) {
 
         composable("kelolaProduk") {
             KelolaProduk(
-                modifier = modifier,
-                navController = navController
-            )
-        }
-        composable("tambahProduk") {
-            TambahProduk(
                 modifier = modifier,
                 navController = navController
             )
@@ -440,7 +448,7 @@ fun PreviewApp() {
         val navController = rememberNavController()
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route ?: "welcomePage"
-        val noNavBar = listOf("welcomePage", "login", "register", "daftarObrolan", "detailProduk/{id}", "favorite", "jualProduk")
+        val noNavBar = listOf("splashScreen", "welcomePage", "login", "register", "daftarObrolan", "detailProduk/{id}", "favorite", "jualProduk")
 
         Scaffold(
             modifier = Modifier
