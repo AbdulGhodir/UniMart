@@ -23,6 +23,7 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.ShoppingCart
@@ -196,13 +197,13 @@ fun Profile(modifier: Modifier, navController: NavController) {
                     horizontalArrangement = Arrangement.spacedBy(14.dp),
                     verticalAlignment = Alignment.CenterVertically) {
                     TextButton(onClick = { }) {
-                        Icon(imageVector = Icons.Default.ThumbUp, contentDescription = "Favorit", tint = Color(0xFFFFFFFF), modifier = Modifier.size(42.dp)
+                        Icon(imageVector = Icons.Default.Favorite, contentDescription = "Favorit", tint = Color(0xFFFFFFFF), modifier = Modifier.size(42.dp)
                             .clip(RoundedCornerShape(10.dp))
                             .background(
                                 MaterialTheme.colorScheme.primary).padding(10.dp))
                         Spacer(modifier = Modifier.width(12.dp))
                         Box(Modifier.weight(1f)) {
-                            Text(text = "Whitelist", fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = Color.Black)
+                            Text(text = "Favorit", fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = Color.Black)
                         }
                         Icon(imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = "ArrowRight", tint = Color(0xFF000000), modifier = Modifier.size(32.dp))
                     }

@@ -41,13 +41,14 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.painterResource
+import androidx.navigation.NavController
 import com.blockbusteruwu.unimart.R
 import component.ui.RowLayout
 import component.ui.SearchInput
 import model.BarangSource
 
 @Composable
-fun Pencarian(modifier: Modifier) {
+fun Pencarian(modifier: Modifier, navController: NavController) {
     var search by remember { mutableStateOf("") }
     val barang = BarangSource.daftarBarang
     val filteredBarang = barang.filter { it.nama.contains(search, ignoreCase = true) }
@@ -91,7 +92,7 @@ fun Pencarian(modifier: Modifier) {
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     items(filteredBarang) { i ->
-                        RowLayout(barang = i)
+                        RowLayout(barang = i, navController = navController)
                     }
                 }
             } else if (filteredBarang.isEmpty() && search.isNotEmpty()) {

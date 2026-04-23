@@ -49,14 +49,14 @@ import model.UserSource
 @Composable
 fun DetailProduk(barang: Barang, modifier: Modifier = Modifier, navController: NavController) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
     ) {
         Column(
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
-                .padding(bottom = 100.dp)
+                .padding(bottom = 80.dp)
         ) {
             Image(
                 painter = painterResource(id = barang.gambar),
@@ -133,7 +133,6 @@ fun DetailProduk(barang: Barang, modifier: Modifier = Modifier, navController: N
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .shadow(1.dp, spotColor = Color.Black)
                         .background(Color.White)
                         .border(width = 1.dp, color = MaterialTheme.colorScheme.outline)
                         .padding(16.dp, 20.dp),
@@ -161,7 +160,6 @@ fun DetailProduk(barang: Barang, modifier: Modifier = Modifier, navController: N
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .shadow(1.dp, spotColor = Color.Black)
                         .background(Color.White)
                         .border(width = 1.dp, color = MaterialTheme.colorScheme.outline)
                         .padding(16.dp, 20.dp),
