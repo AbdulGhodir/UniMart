@@ -123,12 +123,12 @@ fun KelolaProduk(modifier: Modifier = Modifier, navController: NavController) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween) {
                 Text(text = "Daftar Produk", fontSize = 20.sp, fontWeight = FontWeight.Bold)
-                Button(onClick = { navController.navigate("tambahProduk") {
+                Button(onClick = { navController.navigate("jualProduk") {
                     popUpTo(navController.graph.startDestinationId) { saveState = true }
                     launchSingleTop = true
                     restoreState = true
                 } }) {
-                    Text(text = "Tambah Produk")
+                    Text(text = "Jual Produk")
                 }
             }
             Spacer(modifier = Modifier.height(10.dp))

@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -34,29 +35,32 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.blockbusteruwu.unimart.R
 import com.blockbusteruwu.unimart.formatRibuan
+import androidx.navigation.NavController
 import model.Barang
 
 @Composable
-fun ColumnLayout(barang: Barang) {
+fun ColumnLayout(barang: Barang, navController: NavController) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(IntrinsicSize.Min),
+            .height(IntrinsicSize.Min)
+            .fillMaxWidth()
+            .clickable { navController.navigate("detailProduk/${barang.id}") },
         elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         shape = RoundedCornerShape(10.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
     ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .fillMaxWidth()
+                .padding(10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            AsyncImage(
-                model = barang.gambar,
-                contentDescription = barang.nama,
-                placeholder = painterResource(id = R.drawable.img_barang1),
-                error = painterResource(id = R.drawable.img_barang2),
+            Image(
+                painter = painterResource(id = barang.gambar),
+                contentDescription = null,
                 modifier = Modifier
                     .clip(RoundedCornerShape(10.dp))
                     .shadow(
@@ -64,15 +68,14 @@ fun ColumnLayout(barang: Barang) {
                         spotColor = Color.Black,
                         ambientColor = Color.Black
                     )
-                    .width(110.dp)
-                    .height(110.dp)
+                    .width(80.dp)
+                    .height(100.dp)
                     .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(10.dp)),
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Crop,
             )
 
             Column(
-                verticalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.weight(1f).fillMaxHeight().padding(top = 10.dp, bottom = 10.dp, end = 10.dp)
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(-5.dp)
@@ -81,7 +84,7 @@ fun ColumnLayout(barang: Barang) {
                     Text(text = "Dibeli pada: 12 Mei 2023", fontSize = 12.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSecondary)
                 }
 
-                Text(text = "Rp. ${barang.harga.formatRibuan()}", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+                Text(text = "Rp ${barang.harga}", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
             }
         }
     }

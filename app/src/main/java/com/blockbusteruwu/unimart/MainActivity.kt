@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
@@ -36,6 +37,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -44,15 +47,23 @@ import com.blockbusteruwu.unimart.ui.theme.PrimaryColor
 import com.blockbusteruwu.unimart.ui.theme.UniMartTheme
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import component.pages.DaftarObrolan
 import java.text.NumberFormat
 import java.util.Locale
 import component.pages.Dashboard
+import component.pages.DetailProduk
 import component.pages.History
 import component.pages.Pencarian
 import component.pages.Profile
 import component.pages.EditProfile
 import component.pages.KelolaProduk
-import component.pages.TambahProduk
+import component.pages.Favorite
+import component.pages.JualBarang
+import component.pages.Register
+import component.pages.WelcomePage
+import component.pages.Login
+import component.pages.SplashScreen
+import model.BarangSource
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,23 +81,28 @@ class MainActivity : ComponentActivity() {
         setContent {
             UniMartTheme {
                 val navController = rememberNavController()
+                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                val currentRoute = navBackStackEntry?.destination?.route ?: "splashScreen"
+                val noNavBar = listOf("splashScreen", "welcomePage", "login", "register", "daftarObrolan", "detailProduk/{id}", "favorite", "jualProduk")
 
                 Scaffold(
                     modifier = Modifier
                         .fillMaxSize(),
-                    bottomBar = { Navbar(navController) },
+                    bottomBar = { if (currentRoute !in noNavBar){ Navbar(navController) } },
                     floatingActionButton = {
-                        FloatingActionButton(
-                            onClick = { },
-                            shape = CircleShape,
-                            modifier = Modifier
-                                .size(60.dp)
-                                .offset(y = 60.dp)
-                                .border(width = 3.dp, color = Color.White, shape = CircleShape),
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = Color.White,
+                        if (currentRoute !in noNavBar){
+                            FloatingActionButton(
+                                onClick = { navController.navigate("jualProduk")  },
+                                shape = CircleShape,
+                                modifier = Modifier
+                                    .size(60.dp)
+                                    .offset(y = 60.dp)
+                                    .border(width = 3.dp, color = Color.White, shape = CircleShape),
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = Color.White,
 
-                            ) { Icon(Icons.Filled.Add, contentDescription = "Pembayaran") }
+                                ) { Icon(Icons.Filled.Add, contentDescription = "Pembayaran") }
+                        }
                     },
                     floatingActionButtonPosition = FabPosition.Center
                 ) { innerPadding ->
@@ -101,8 +117,37 @@ class MainActivity : ComponentActivity() {
 fun AppNavigation(modifier: Modifier, navController: NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = "home"
+        startDestination = "splashScreen"
     ) {
+        composable("splashScreen") {
+            SplashScreen(
+                modifier = modifier,
+                navController = navController
+            )
+        }
+
+        composable("welcomePage") {
+            WelcomePage(
+                modifier = modifier,
+                navController = navController
+            )
+        }
+
+        composable("register") {
+            Register(
+                modifier = modifier,
+                navController = navController
+            )
+        }
+
+        composable("login") {
+            Login(
+                modifier = modifier,
+                navController = navController
+            )
+        }
+
+
         composable("home") {
             Dashboard(
                 modifier = modifier,
@@ -111,7 +156,17 @@ fun AppNavigation(modifier: Modifier, navController: NavHostController) {
         }
 
         composable("search") {
-            Pencarian(modifier = modifier)
+            Pencarian(
+                modifier = modifier,
+                navController = navController
+            )
+        }
+
+        composable("jualProduk") {
+            JualBarang(
+                modifier = modifier,
+                navController = navController
+            )
         }
 
         composable("history") {
@@ -141,11 +196,36 @@ fun AppNavigation(modifier: Modifier, navController: NavHostController) {
                 navController = navController
             )
         }
-        composable("tambahProduk") {
-            TambahProduk(
+
+        composable("favorite") {
+            Favorite(
                 modifier = modifier,
                 navController = navController
             )
+        }
+
+        composable("daftarObrolan"){
+            DaftarObrolan(
+                modifier = modifier,
+                navController = navController
+            )
+        }
+
+        composable("detailProduk/{id}") { backStackEntry ->
+            val idProduk = backStackEntry.arguments?.getString("id")
+            val barang = BarangSource.daftarBarang.find { it.id.toString() == idProduk }
+
+            if (barang != null) {
+                DetailProduk(
+                    barang = barang,
+                    modifier = modifier,
+                    navController = navController
+                )
+            } else {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(text = "Data Produk Tidak Ditemukan! ID: ${idProduk}", fontSize = 26.sp, fontWeight = FontWeight.Bold)
+                }
+            }
         }
     }
 }
@@ -327,28 +407,33 @@ fun Int.formatRibuan(): String {
 @Composable
 fun PreviewApp() {
     UniMartTheme {
-        val previewNavbarController = rememberNavController()
+        val navController = rememberNavController()
+        val navBackStackEntry by navController.currentBackStackEntryAsState()
+        val currentRoute = navBackStackEntry?.destination?.route ?: "welcomePage"
+        val noNavBar = listOf("splashScreen", "welcomePage", "login", "register", "daftarObrolan", "detailProduk/{id}", "favorite", "jualProduk")
 
         Scaffold(
             modifier = Modifier
                 .fillMaxSize(),
-            bottomBar = { Navbar(previewNavbarController) },
+            bottomBar = { if (currentRoute !in noNavBar){ Navbar(navController) } },
             floatingActionButton = {
-                FloatingActionButton(
-                    onClick = { },
-                    shape = CircleShape,
-                    modifier = Modifier
-                        .size(60.dp)
-                        .offset(y = 55.dp)
-                        .border(width = 3.dp, color = Color.White, shape = CircleShape),
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = Color.White,
+                if (currentRoute !in noNavBar){
+                    FloatingActionButton(
+                        onClick = { },
+                        shape = CircleShape,
+                        modifier = Modifier
+                            .size(60.dp)
+                            .offset(y = 60.dp)
+                            .border(width = 3.dp, color = Color.White, shape = CircleShape),
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = Color.White,
 
-                    ) { Icon(Icons.Filled.Add, contentDescription = "Pembayaran") }
+                        ) { Icon(Icons.Filled.Add, contentDescription = "Pembayaran") }
+                }
             },
             floatingActionButtonPosition = FabPosition.Center
         ) { innerPadding ->
-            AppNavigation(modifier = Modifier.padding(innerPadding) , navController = previewNavbarController)
+            AppNavigation(modifier = Modifier.padding(innerPadding) , navController = navController)
         }
     }
 }
@@ -357,8 +442,6 @@ fun PreviewApp() {
 @Composable
 fun DashboardPreview() {
     UniMartTheme {
-        UniMartTheme {
-            PreviewApp()
-        }
+        PreviewApp()
     }
 }

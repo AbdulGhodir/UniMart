@@ -1,6 +1,7 @@
 package component.pages
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -106,14 +107,18 @@ fun Dashboard(modifier: Modifier = Modifier, navController: NavController) {
                     painter = painterResource(id = R.drawable.ic_favorite),
                     contentDescription = "favorite",
                     tint = MaterialTheme.colorScheme.onPrimary,
-                    modifier = Modifier.size(26.dp)
+                    modifier = Modifier
+                        .size(26.dp)
+                        .clickable{ navController.navigate("favorite") }
                 )
 
                 Icon(
                     painter = painterResource(id = R.drawable.ic_message),
                     contentDescription = "chat",
                     tint = MaterialTheme.colorScheme.onPrimary,
-                    modifier = Modifier.size(26.dp)
+                    modifier = Modifier
+                        .size(26.dp)
+                        .clickable{ navController.navigate("daftarObrolan") }
                 )
             }
         }
@@ -350,7 +355,7 @@ fun Dashboard(modifier: Modifier = Modifier, navController: NavController) {
                         horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         items(posts) { barang ->
-                            RowLayout(barang = barang)
+                            RowLayout(barang = barang, navController = navController)
                         }
                     }
                 }
@@ -391,7 +396,7 @@ fun Dashboard(modifier: Modifier = Modifier, navController: NavController) {
                         horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         items(posts) { barang ->
-                            RowLayout(barang = barang)
+                            RowLayout(barang = barang, navController = navController)
                         }
                     }
                 }
@@ -428,7 +433,7 @@ fun Dashboard(modifier: Modifier = Modifier, navController: NavController) {
                         horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         items(posts) { barang ->
-                            RowLayout(barang = barang)
+                            RowLayout(barang = barang, navController = navController)
                         }
                     }
                 }
