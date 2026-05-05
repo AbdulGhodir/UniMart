@@ -41,6 +41,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.blockbusteruwu.unimart.R
 import com.blockbusteruwu.unimart.formatRibuan
 import model.Barang
@@ -58,9 +59,11 @@ fun DetailProduk(barang: Barang, modifier: Modifier = Modifier, navController: N
                 .verticalScroll(rememberScrollState())
                 .padding(bottom = 80.dp)
         ) {
-            Image(
-                painter = painterResource(id = barang.gambar),
+            AsyncImage(
+                model = barang.gambar,
                 contentDescription = barang.nama,
+                placeholder = painterResource(id = R.drawable.img_barang1),
+                error = painterResource(id = R.drawable.img_barang2),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(450.dp),
@@ -81,7 +84,7 @@ fun DetailProduk(barang: Barang, modifier: Modifier = Modifier, navController: N
                     verticalArrangement = Arrangement.spacedBy(5.dp)
                 ) {
                     Text(text = "${barang.nama}", fontSize = 20.sp, fontWeight = FontWeight.Bold)
-                    Text(text = "Rp ${barang.harga.formatRibuan()}", fontSize = 28.sp, fontWeight = FontWeight.Black, color = MaterialTheme.colorScheme.primary)
+                    Text(text = "Rp. ${barang.harga.formatRibuan()}", fontSize = 28.sp, fontWeight = FontWeight.Black, color = MaterialTheme.colorScheme.primary)
                 }
 
                 Row(
@@ -106,7 +109,7 @@ fun DetailProduk(barang: Barang, modifier: Modifier = Modifier, navController: N
                             verticalArrangement = Arrangement.spacedBy((-4).dp)
                         ) {
                             Text(text = "Kategori", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSecondary)
-                            Text(text = "Aksesoris", fontWeight = FontWeight.Medium)
+                            Text(text = barang.kategori, fontWeight = FontWeight.Medium)
                         }
                     }
 
@@ -153,7 +156,7 @@ fun DetailProduk(barang: Barang, modifier: Modifier = Modifier, navController: N
                     }
 
                     Text(
-                        text = "Sepatu sneakers kasual masih mulus 90%. Jarang dipakai. Nyaman digunakan untuk ngampus. Nego tipis aja ya.",
+                        text = barang.deskripsi,
                     )
                 }
 
