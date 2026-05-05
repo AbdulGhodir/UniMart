@@ -30,6 +30,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -41,16 +42,27 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.painterResource
+import api.RetrofitClient
 import com.blockbusteruwu.unimart.R
 import component.ui.RowLayout
 import component.ui.SearchInput
-import model.BarangSource
+import model.Barang
 
 @Composable
 fun Pencarian(modifier: Modifier) {
     var search by remember { mutableStateOf("") }
-    val barang = BarangSource.daftarBarang
-    val filteredBarang = barang.filter { it.nama.contains(search, ignoreCase = true) }
+    var isLoading by remember { mutableStateOf(true) }
+    var posts by remember { mutableStateOf(emptyList<Barang>()) }
+
+    LaunchedEffect(Unit) {
+        try {
+            posts = RetrofitClient.instance.getPosts()
+            isLoading = false
+        } catch (e: Exception) {
+            isLoading = false
+        }
+    }
+    val filteredBarang = posts.filter { it.nama.contains(search, ignoreCase = true) }
 
     Column(modifier = modifier
         .fillMaxSize()

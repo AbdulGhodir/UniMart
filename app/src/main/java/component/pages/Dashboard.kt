@@ -19,10 +19,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,12 +36,28 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import api.RetrofitClient
 import com.blockbusteruwu.unimart.R
-import model.BarangSource
 import component.ui.RowLayout
+import model.Barang
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+
 
 @Composable
 fun Dashboard(modifier: Modifier = Modifier, navController: NavController) {
+    var isLoading by remember { mutableStateOf(true) }
+    var posts by remember { mutableStateOf(emptyList<Barang>()) }
+
+    LaunchedEffect(Unit) {
+        try {
+            posts = RetrofitClient.instance.getPosts()
+            isLoading = false
+        } catch (e: Exception) {
+            isLoading = false
+        }
+    }
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -319,12 +339,19 @@ fun Dashboard(modifier: Modifier = Modifier, navController: NavController) {
                     )
                 }
 
-                LazyRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    items(BarangSource.daftarBarang) { barang ->
-                        RowLayout(barang = barang)
+                if (isLoading) {
+                    Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        CircularProgressIndicator()
+                        Text(text = "Memuat Data...", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSecondary)
+                    }
+                } else {
+                    LazyRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        items(posts) { barang ->
+                            RowLayout(barang = barang)
+                        }
                     }
                 }
             }
@@ -353,12 +380,19 @@ fun Dashboard(modifier: Modifier = Modifier, navController: NavController) {
                     )
                 }
 
-                LazyRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    items(BarangSource.daftarBarang) { barang ->
-                        RowLayout(barang = barang)
+                if (isLoading) {
+                    Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        CircularProgressIndicator()
+                        Text(text = "Memuat Data...", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSecondary)
+                    }
+                } else {
+                    LazyRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        items(posts) { barang ->
+                            RowLayout(barang = barang)
+                        }
                     }
                 }
             }
@@ -383,12 +417,19 @@ fun Dashboard(modifier: Modifier = Modifier, navController: NavController) {
                     )
                 }
 
-                LazyRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    items(BarangSource.daftarBarang) { barang ->
-                        RowLayout(barang = barang)
+                if (isLoading) {
+                    Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        CircularProgressIndicator()
+                        Text(text = "Memuat Data...", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSecondary)
+                    }
+                } else {
+                    LazyRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        items(posts) { barang ->
+                            RowLayout(barang = barang)
+                        }
                     }
                 }
             }
