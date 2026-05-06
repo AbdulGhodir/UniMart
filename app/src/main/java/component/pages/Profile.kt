@@ -25,9 +25,7 @@ import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -237,7 +235,11 @@ fun Profile(modifier: Modifier, navController: NavController) {
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
-            Button(onClick = { /*TODO*/ }, modifier = Modifier.fillMaxWidth(),
+            Button(onClick = {  navController.navigate("login") {
+                popUpTo(navController.graph.startDestinationId) { saveState = true }
+                launchSingleTop = true
+                restoreState = true
+            } }, modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0x30FF0000),
                     contentColor = Color.Red

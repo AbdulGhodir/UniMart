@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import api.RetrofitClient
-import com.blockbusteruwu.unimart.ui.FavoriteCard
+import component.ui.FavoriteCard
 import model.Barang
 
 @Composable

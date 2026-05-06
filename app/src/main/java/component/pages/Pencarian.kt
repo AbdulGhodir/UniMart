@@ -52,15 +52,15 @@ import model.Barang
 @Composable
 fun Pencarian(modifier: Modifier, navController: NavController) {
     var search by remember { mutableStateOf("") }
-    var isLoading by remember { mutableStateOf(true) }
+//    var isLoading by remember { mutableStateOf(true) }
     var posts by remember { mutableStateOf(emptyList<Barang>()) }
 
     LaunchedEffect(Unit) {
         try {
             posts = RetrofitClient.instance.getPosts()
-            isLoading = false
+//            isLoading = false
         } catch (e: Exception) {
-            isLoading = false
+//            isLoading = false
         }
     }
     val filteredBarang = posts.filter { it.nama.contains(search, ignoreCase = true) }
@@ -81,7 +81,7 @@ fun Pencarian(modifier: Modifier, navController: NavController) {
             LazyRow(modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically) {
-                items(listOf<String>("Semua","Fashion","Elektronik","Makanan")) { i ->
+                items(listOf("Semua","Fashion","Elektronik","Makanan")) { i ->
                     Button(onClick = { search = i },
                         modifier = Modifier.height(36.dp),
                         shape = RoundedCornerShape(15.dp),
@@ -124,7 +124,7 @@ fun Pencarian(modifier: Modifier, navController: NavController) {
                 }
                 LazyColumn(modifier = Modifier.fillMaxWidth()
                     .border(width = 1.dp, color = Color(0x401D3F73), shape = RoundedCornerShape(15.dp))) {
-                    items(listOf<String>("Sepatu","Baju","Topi","Celana")) { i ->
+                    items(listOf("Sepatu","Baju","Topi","Celana")) { i ->
                         Row(modifier = Modifier.fillMaxWidth()
                             .background(Color.White)
                             .padding(PaddingValues(horizontal = 6.dp))) {

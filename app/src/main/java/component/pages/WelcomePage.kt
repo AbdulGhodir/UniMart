@@ -76,7 +76,7 @@ fun WelcomePage(modifier: Modifier = Modifier, navController: NavController){
                 )
             }
 
-            Column() {
+            Column {
                 Button(
                     onClick = {
                         navController.navigate("register")

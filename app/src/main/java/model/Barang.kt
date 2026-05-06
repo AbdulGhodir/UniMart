@@ -1,5 +1,5 @@
 package model
-import androidx.annotation.DrawableRes
+
 import com.google.gson.annotations.SerializedName
 
 

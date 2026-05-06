@@ -1,7 +1,6 @@
 package component.ui
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -34,7 +33,7 @@ import model.Barang
 @Composable
 fun RowLayout(barang: Barang, navController: NavController) {
     Card(
-        modifier = Modifier.width(180.dp)
+        modifier = Modifier.width(160.dp)
             .clickable { navController.navigate("detailProduk/${barang.id}") },
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 5.dp),
@@ -63,7 +62,7 @@ fun RowLayout(barang: Barang, navController: NavController) {
 
                 contentScale = ContentScale.Crop
             )
-            Column(modifier = Modifier.padding(end = 10.dp, start = 10.dp, bottom = 6.dp)) {
+            Column(modifier = Modifier.padding(end = 12.dp, start = 12.dp, bottom = 8.dp)) {
                 Text(text = barang.nama, fontSize = 12.sp, fontWeight = FontWeight.Medium, minLines = 2, maxLines = 2, lineHeight = 16.sp)
                 Text(text = "Rp ${barang.harga.formatRibuan()}", fontWeight = FontWeight.Bold, fontSize = 14.sp, color = MaterialTheme.colorScheme.primary)
             }

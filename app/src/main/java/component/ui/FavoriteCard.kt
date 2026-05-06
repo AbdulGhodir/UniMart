@@ -1,6 +1,5 @@
-package com.blockbusteruwu.unimart.ui
+package component.ui
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -33,7 +32,7 @@ fun FavoriteCard(barang: Barang) {
                 AsyncImage(
                     model = barang.gambar,
                     contentDescription = barang.nama,
-                    placeholder = painterResource(id = com.blockbusteruwu.unimart.R.drawable.img_barang1),
+                    placeholder = painterResource(id = R.drawable.img_barang1),
                     error = painterResource(id = R.drawable.img_barang2),
                     contentScale = ContentScale.Crop,
                     modifier = Modifier

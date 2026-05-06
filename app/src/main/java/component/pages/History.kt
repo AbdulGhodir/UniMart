@@ -28,12 +28,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import api.RetrofitClient
-import androidx.navigation.compose.rememberNavController
 import com.blockbusteruwu.unimart.R
 import component.ui.ColumnLayout
 import model.Barang
@@ -47,7 +45,7 @@ fun History(modifier: Modifier = Modifier, navController: NavController) {
         try {
             posts = RetrofitClient.instance.getPosts()
             isLoading = false
-        } catch (e: Exception) {
+        } catch (e: Exception){
             isLoading = false
         }
     }

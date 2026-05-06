@@ -33,7 +33,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -83,7 +82,7 @@ fun DetailProduk(barang: Barang, modifier: Modifier = Modifier, navController: N
                         .padding(16.dp, 20.dp),
                     verticalArrangement = Arrangement.spacedBy(5.dp)
                 ) {
-                    Text(text = "${barang.nama}", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                    Text(text = barang.nama, fontSize = 20.sp, fontWeight = FontWeight.Bold)
                     Text(text = "Rp. ${barang.harga.formatRibuan()}", fontSize = 28.sp, fontWeight = FontWeight.Black, color = MaterialTheme.colorScheme.primary)
                 }
 
@@ -93,6 +92,8 @@ fun DetailProduk(barang: Barang, modifier: Modifier = Modifier, navController: N
                         .background(Color.White)
                         .border(width = 1.dp, color = MaterialTheme.colorScheme.outline)
                         .padding(16.dp, 20.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Row(
                         modifier = Modifier.weight(1f),
@@ -185,8 +186,8 @@ fun DetailProduk(barang: Barang, modifier: Modifier = Modifier, navController: N
 
                             )
 
-                        Column() {
-                            Text(text = "${UserSource.user.namaLengkap}", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                        Column {
+                            Text(text = UserSource.user.namaLengkap, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                             Text(text = "Seller", color = MaterialTheme.colorScheme.onSecondary, fontSize = 14.sp, fontWeight = FontWeight.Medium)
                         }
                     }
