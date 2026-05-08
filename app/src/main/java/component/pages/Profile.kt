@@ -70,11 +70,23 @@ fun Profile(modifier: Modifier, navController: NavController) {
                     horizontalAlignment = Alignment.Start) {
                     Text(text = user.namaLengkap, fontSize = 18.sp, color = Color.White, fontWeight = FontWeight.SemiBold)
                     Text(text = user.email, fontSize = 12.sp, color = Color(0x80FFFFFF))
-                    OutlinedButton(onClick = { /*TODO*/ }, modifier = Modifier.height(36.dp), colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = Color.White,
-                        containerColor = Color(0xFF1b52a6)
-                    )) {
-                        Text(text = if(user.isPremium) "Premium" else "Daftar Premium", fontSize = 12.sp)
+                    Button(
+                        onClick = {
+                            navController.navigate("daftarPenjual")
+                        },
+                        modifier = Modifier.height(36.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            contentColor = Color.White,
+                            containerColor = Color(0xFF1b52a6)
+                        ),
+                        shape = RoundedCornerShape(10.dp),
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp)
+                    ) {
+                        Text(
+                            text = if(user.isPremium) "Premium" else "Daftar Penjual",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold
+                        )
                     }
 
                 }

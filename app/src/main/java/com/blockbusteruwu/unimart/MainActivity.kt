@@ -54,6 +54,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import api.RetrofitClient
 import component.pages.DaftarObrolan
+import component.pages.DaftarPenjual
 import java.text.NumberFormat
 import java.util.Locale
 import component.pages.Dashboard
@@ -69,6 +70,7 @@ import component.pages.Register
 import component.pages.WelcomePage
 import component.pages.Login
 import component.pages.SplashScreen
+import component.pages.DaftarPenjual
 import model.Barang
 
 class MainActivity : ComponentActivity() {
@@ -184,6 +186,13 @@ fun AppNavigation(modifier: Modifier, navController: NavHostController) {
 
         composable("profile") {
             Profile(
+                modifier = modifier,
+                navController = navController
+            )
+        }
+
+        composable("daftarPenjual") {
+            DaftarPenjual(
                 modifier = modifier,
                 navController = navController
             )
