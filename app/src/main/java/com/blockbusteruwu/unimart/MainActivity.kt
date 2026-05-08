@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -29,6 +30,7 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
@@ -37,6 +39,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -47,6 +52,7 @@ import com.blockbusteruwu.unimart.ui.theme.PrimaryColor
 import com.blockbusteruwu.unimart.ui.theme.UniMartTheme
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import api.RetrofitClient
 import component.pages.DaftarObrolan
 import java.text.NumberFormat
 import java.util.Locale
@@ -63,7 +69,7 @@ import component.pages.Register
 import component.pages.WelcomePage
 import component.pages.Login
 import component.pages.SplashScreen
-import model.BarangSource
+import model.Barang
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -213,17 +219,54 @@ fun AppNavigation(modifier: Modifier, navController: NavHostController) {
 
         composable("detailProduk/{id}") { backStackEntry ->
             val idProduk = backStackEntry.arguments?.getString("id")
-            val barang = BarangSource.daftarBarang.find { it.id.toString() == idProduk }
+            var isLoading by remember { mutableStateOf(true) }
+            var barang by remember { mutableStateOf<Barang?>(null) }
 
-            if (barang != null) {
-                DetailProduk(
-                    barang = barang,
-                    modifier = modifier,
-                    navController = navController
-                )
-            } else {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(text = "Data Produk Tidak Ditemukan! ID: ${idProduk}", fontSize = 26.sp, fontWeight = FontWeight.Bold)
+            LaunchedEffect(Unit) {
+                try {
+                    val posts =
+                        RetrofitClient.instance.getPosts()
+
+                    barang =
+                        posts.find {
+                            it.id.toString() == idProduk
+                        }
+                } catch (e: Exception) {
+                    barang = null
+                } finally {
+                    isLoading = false
+                }
+
+            }
+
+            when {
+                isLoading -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                }
+
+                barang != null -> {
+                    DetailProduk(
+                        barang = barang!!,
+                        modifier = modifier,
+                        navController = navController
+                    )
+                }
+                else -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "Data Produk Tidak Ditemukan! ID: $idProduk",
+                            fontSize = 26.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
             }
         }

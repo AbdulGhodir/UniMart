@@ -1,12 +1,13 @@
 package component.ui
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -27,6 +28,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import com.blockbusteruwu.unimart.R
+import com.blockbusteruwu.unimart.formatRibuan
 import androidx.navigation.NavController
 import model.Barang
 
@@ -34,6 +38,8 @@ import model.Barang
 fun ColumnLayout(barang: Barang, navController: NavController) {
     Card(
         modifier = Modifier
+            .fillMaxWidth()
+            .height(IntrinsicSize.Min)
             .fillMaxWidth()
             .clickable { navController.navigate("detailProduk/${barang.id}") },
         elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
@@ -43,38 +49,40 @@ fun ColumnLayout(barang: Barang, navController: NavController) {
     ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(10.dp),
+                .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            Image(
-                painter = painterResource(id = barang.gambar),
-                contentDescription = null,
+            AsyncImage(
+                model = barang.gambar,
+                contentDescription = barang.nama,
+                placeholder = painterResource(id = R.drawable.img_barang1),
+                error = painterResource(id = R.drawable.img_barang2),
                 modifier = Modifier
-                    .clip(RoundedCornerShape(10.dp))
+                    .clip(RoundedCornerShape(topStart = 10.dp, bottomStart = 10.dp))
                     .shadow(
                         elevation = 50.dp,
                         spotColor = Color.Black,
                         ambientColor = Color.Black
                     )
-                    .width(80.dp)
-                    .height(100.dp)
+                    .width(110.dp)
+                    .height(110.dp)
                     .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(10.dp)),
-                contentScale = ContentScale.Crop,
+                contentScale = ContentScale.Crop
             )
 
             Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.weight(1f).fillMaxHeight().padding(top = 10.dp, bottom = 10.dp, end = 10.dp)
             ) {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(-5.dp)
                 ) {
-                    Text(text = "${barang.nama}", fontSize = 16.sp, fontWeight = FontWeight.Bold, maxLines = 1)
+                    Text(text = barang.nama, fontSize = 16.sp, fontWeight = FontWeight.Bold, maxLines = 1)
                     Text(text = "Dibeli pada: 12 Mei 2023", fontSize = 12.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSecondary)
                 }
 
-                Text(text = "Rp ${barang.harga}", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+                Text(text = "Rp. ${barang.harga.formatRibuan()}", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
             }
         }
     }

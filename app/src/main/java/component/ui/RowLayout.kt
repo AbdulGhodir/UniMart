@@ -1,9 +1,6 @@
 package component.ui
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -28,15 +25,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
+import com.blockbusteruwu.unimart.R
 import com.blockbusteruwu.unimart.formatRibuan
 import model.Barang
 
 @Composable
 fun RowLayout(barang: Barang, navController: NavController) {
     Card(
-        modifier = Modifier
-            .width(150.dp)
-            .clickable{ navController.navigate("detailProduk/${barang.id}") },
+        modifier = Modifier.width(160.dp)
+            .clickable { navController.navigate("detailProduk/${barang.id}") },
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 5.dp),
         colors = CardDefaults.cardColors(Color.White),
@@ -44,28 +42,30 @@ fun RowLayout(barang: Barang, navController: NavController) {
     ) {
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(6.dp),
+                .fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(5.dp)
         ) {
-            Image(
-                painter = painterResource(id = barang.gambar),
+            AsyncImage(
+                model = barang.gambar,
                 contentDescription = barang.nama,
+                placeholder = painterResource(id = R.drawable.img_barang1),
+                error = painterResource(id = R.drawable.img_barang2),
                 modifier = Modifier
-                    .clip(RoundedCornerShape(10.dp))
+                    .clip(RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp))
                     .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.secondary)
                     .height(150.dp)
                     .shadow(
                         elevation = 50.dp,
                         spotColor = Color.Black,
                         ambientColor = Color.Black
-                    )
-                    .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(10.dp)),
-                contentScale = ContentScale.Crop,
+                    ),
+
+                contentScale = ContentScale.Crop
             )
-            Text(text = "${barang.nama}", fontSize = 12.sp, fontWeight = FontWeight.Medium, minLines = 2, maxLines = 2, lineHeight = 16.sp)
-            Text(text = "Rp ${barang.harga.formatRibuan()}", fontWeight = FontWeight.Bold, fontSize = 14.sp, color = MaterialTheme.colorScheme.primary)
+            Column(modifier = Modifier.padding(end = 12.dp, start = 12.dp, bottom = 8.dp)) {
+                Text(text = barang.nama, fontSize = 12.sp, fontWeight = FontWeight.Medium, minLines = 2, maxLines = 2, lineHeight = 16.sp)
+                Text(text = "Rp ${barang.harga.formatRibuan()}", fontWeight = FontWeight.Bold, fontSize = 14.sp, color = MaterialTheme.colorScheme.primary)
+            }
         }
     }
 }

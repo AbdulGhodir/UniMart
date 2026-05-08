@@ -7,10 +7,16 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -18,11 +24,24 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import model.BarangSource
-import com.blockbusteruwu.unimart.ui.FavoriteCard
+import api.RetrofitClient
+import component.ui.FavoriteCard
+import model.Barang
 
 @Composable
 fun Favorite(modifier: Modifier = Modifier, navController: NavHostController) {
+    var isLoading by remember { mutableStateOf(true) }
+    var posts by remember { mutableStateOf(emptyList<Barang>()) }
+
+    LaunchedEffect(Unit) {
+        try {
+            posts = RetrofitClient.instance.getPosts()
+            isLoading = false
+        } catch (e: Exception) {
+            isLoading = false
+        }
+    }
+
     Column(
         modifier = modifier.fillMaxSize()
     ) {
@@ -49,22 +68,34 @@ fun Favorite(modifier: Modifier = Modifier, navController: NavHostController) {
             )
         }
 
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier
-                .fillMaxSize(),
-            contentPadding = PaddingValues(
-                top = 16.dp,
-                start = 16.dp,
-                end = 16.dp,
-                bottom = 16.dp
-            )
-        ) {
-            items(BarangSource.daftarBarang) { barang ->
-                FavoriteCard(barang = barang)
+        if (isLoading) {
+            Column(
+                modifier = Modifier.weight(1f).fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                CircularProgressIndicator()
+                Text(text = "Memuat Data...", fontSize = 12.sp, color = Color.Gray)
+            }
+        } else {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier
+                    .fillMaxSize(),
+                contentPadding = PaddingValues(
+                    top = 16.dp,
+                    start = 16.dp,
+                    end = 16.dp,
+                    bottom = 16.dp
+                )
+            ) {
+                items(posts) { barang ->
+                    FavoriteCard(barang = barang)
+                }
             }
         }
+
     }
 }

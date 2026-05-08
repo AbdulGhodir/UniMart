@@ -14,26 +14,42 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
+import api.RetrofitClient
 import com.blockbusteruwu.unimart.R
-import model.BarangSource
 import component.ui.ColumnLayout
+import model.Barang
 
 @Composable
 fun History(modifier: Modifier = Modifier, navController: NavController) {
+    var isLoading by remember { mutableStateOf(true) }
+    var posts by remember { mutableStateOf(emptyList<Barang>()) }
+
+    LaunchedEffect(Unit) {
+        try {
+            posts = RetrofitClient.instance.getPosts()
+            isLoading = false
+        } catch (e: Exception){
+            isLoading = false
+        }
+    }
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -87,17 +103,24 @@ fun History(modifier: Modifier = Modifier, navController: NavController) {
             }
         }
 
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize(),
-            contentPadding = PaddingValues(start = 10.dp, end = 10.dp, top = 25.dp, bottom = 40.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            item { Text(text = "Riwayat Pembelian", fontSize = 20.sp, fontWeight = FontWeight.Bold) }
-
-            items(BarangSource.daftarBarang) { barang ->
-                ColumnLayout(barang = barang, navController = navController)
+        if(isLoading) {
+            Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                CircularProgressIndicator()
+                Text(text = "Memuat Data...", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSecondary)
             }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize(),
+                contentPadding = PaddingValues(start = 10.dp, end = 10.dp, top = 25.dp, bottom = 40.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                item { Text(text = "Riwayat Pembelian", fontSize = 20.sp, fontWeight = FontWeight.Bold) }
+
+                items(posts) { barang ->
+                    ColumnLayout(barang = barang, navController = navController)
+                }
         }
     }
+}
 }

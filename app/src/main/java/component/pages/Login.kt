@@ -17,11 +17,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.blockbusteruwu.unimart.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -35,7 +33,7 @@ fun Login(modifier: Modifier = Modifier, navController: NavController) {
     val snackbarHostState = remember { SnackbarHostState() }
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
     ) {
         Column(

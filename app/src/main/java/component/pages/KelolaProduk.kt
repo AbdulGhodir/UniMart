@@ -1,7 +1,6 @@
 package component.pages
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,12 +25,14 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,15 +47,29 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import api.RetrofitClient
+import coil.compose.AsyncImage
+import com.blockbusteruwu.unimart.R
 import com.blockbusteruwu.unimart.formatRibuan
 import component.ui.SearchInput
-import model.BarangSource
+import model.Barang
 
 @Composable
 fun KelolaProduk(modifier: Modifier = Modifier, navController: NavController) {
     var search by remember { mutableStateOf("") }
-    val barang = BarangSource.daftarBarang
-    val filteredBarang = barang.filter { it.nama.contains(search, ignoreCase = true) }
+    var isLoading by remember { mutableStateOf(true) }
+    var posts by remember { mutableStateOf(emptyList<Barang>()) }
+
+    LaunchedEffect(Unit) {
+        try {
+            posts = RetrofitClient.instance.getPosts()
+            isLoading = false
+        } catch (e: Exception) {
+            isLoading = false
+        }
+    }
+
+    val filteredBarang = posts.filter { it.nama.contains(search, ignoreCase = true) }
 
     Column(modifier = modifier.fillMaxSize()
         .background(MaterialTheme.colorScheme.background)) {
@@ -114,49 +129,62 @@ fun KelolaProduk(modifier: Modifier = Modifier, navController: NavController) {
                 }
             }
             Spacer(modifier = Modifier.height(10.dp))
-            if(filteredBarang.isEmpty()) {
-                Row(modifier = Modifier.fillMaxWidth().padding(PaddingValues(vertical = 30.dp)),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically) {
-                    Icon(imageVector = Icons.Default.Search, contentDescription = "Search", tint = Color(0x801D3F73), modifier = Modifier.size(24.dp))
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = "\"${search}\" Tidak ditemukan", fontSize = 16.sp, color = Color.Gray)
+
+            if(isLoading) {
+                Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    CircularProgressIndicator()
+                    Text(text = "Memuat Data...", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSecondary)
                 }
             } else {
-                LazyColumn(modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(10.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally) {
-                    items(filteredBarang) { barang ->
-                        Card(modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(16.dp),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 5.dp),
-                            colors = CardDefaults.cardColors(Color.White),
-                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)) {
-                            Row(modifier = Modifier.fillMaxWidth().padding(8.dp),
-                                verticalAlignment = Alignment.Top,
-                                horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                                Image(painter = painterResource(barang.gambar), contentDescription = barang.nama,
-                                    modifier = Modifier.size(100.dp).clip(RoundedCornerShape(10.dp)),
-                                    contentScale = ContentScale.Crop)
-                                Column(modifier = Modifier.weight(1f)) {
-                                    Row(modifier = Modifier.fillMaxWidth(),
-                                        verticalAlignment = Alignment.Top) {
-                                        Box(modifier = Modifier.weight(1f)) {
-                                            Text(text = barang.nama, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                if(filteredBarang.isEmpty()) {
+                    Row(modifier = Modifier.fillMaxWidth().padding(PaddingValues(vertical = 30.dp)),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically) {
+                        Icon(imageVector = Icons.Default.Search, contentDescription = "Search", tint = Color(0x801D3F73), modifier = Modifier.size(24.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(text = "\"${search}\" Tidak ditemukan", fontSize = 16.sp, color = Color.Gray)
+                    }
+                } else {
+                    LazyColumn(modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(10.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally) {
+                        items(filteredBarang) { barang ->
+                            Card(modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(16.dp),
+                                elevation = CardDefaults.cardElevation(defaultElevation = 5.dp),
+                                colors = CardDefaults.cardColors(Color.White),
+                                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)) {
+                                Row(modifier = Modifier.fillMaxWidth().padding(8.dp),
+                                    verticalAlignment = Alignment.Top,
+                                    horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                                    AsyncImage(
+                                        model = barang.gambar,
+                                        contentDescription = barang.nama,
+                                        placeholder = painterResource(id = R.drawable.img_barang1),
+                                        error = painterResource(id = R.drawable.img_barang2),
+                                        modifier = Modifier.size(100.dp).clip(RoundedCornerShape(10.dp)),
+                                        contentScale = ContentScale.Crop
+                                    )
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Row(modifier = Modifier.fillMaxWidth(),
+                                            verticalAlignment = Alignment.Top) {
+                                            Box(modifier = Modifier.weight(1f)) {
+                                                Text(text = barang.nama, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                                            }
+                                            IconButton(onClick = {}) {
+                                                Icon(imageVector = Icons.Default.Menu, contentDescription = "Menu", tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
+                                            }
                                         }
-                                        IconButton(onClick = {}) {
-                                            Icon(imageVector = Icons.Default.Menu, contentDescription = "Menu", tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
-                                        }
-                                    }
-                                    Text(text = "Rp ${barang.harga.formatRibuan()}", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
-                                    Row(modifier = Modifier.fillMaxWidth(),
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                                        Box(contentAlignment = Alignment.Center, modifier = Modifier.width(60.dp).height(25.dp).background(Color(0x301D3F73), shape = RoundedCornerShape(10.dp))) {
-                                            Text(text = "Stok: 12", fontSize = 10.sp, color = Color(0xFF1D3F73), modifier = Modifier.align(Alignment.Center))
-                                        }
-                                        Box(contentAlignment = Alignment.Center, modifier = Modifier.width(40.dp).height(25.dp).background(Color(0x3000FF00), shape = RoundedCornerShape(10.dp))) {
-                                            Text(text = "Aktif", fontSize = 10.sp, color = Color.Green, modifier = Modifier.align(Alignment.Center))
+                                        Text(text = "Rp ${barang.harga.formatRibuan()}", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                                        Row(modifier = Modifier.fillMaxWidth(),
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                                            Box(contentAlignment = Alignment.Center, modifier = Modifier.width(60.dp).height(25.dp).background(Color(0x301D3F73), shape = RoundedCornerShape(10.dp))) {
+                                                Text(text = "Stok: 12", fontSize = 10.sp, color = Color(0xFF1D3F73), modifier = Modifier.align(Alignment.Center))
+                                            }
+                                            Box(contentAlignment = Alignment.Center, modifier = Modifier.width(40.dp).height(25.dp).background(Color(0x3000FF00), shape = RoundedCornerShape(10.dp))) {
+                                                Text(text = "Aktif", fontSize = 10.sp, color = Color.Green, modifier = Modifier.align(Alignment.Center))
+                                            }
                                         }
                                     }
                                 }
