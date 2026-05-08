@@ -70,7 +70,7 @@ import component.pages.Register
 import component.pages.WelcomePage
 import component.pages.Login
 import component.pages.SplashScreen
-import component.pages.DaftarPenjual
+import component.pages.PesananMasuk
 import model.Barang
 
 class MainActivity : ComponentActivity() {
@@ -193,6 +193,13 @@ fun AppNavigation(modifier: Modifier, navController: NavHostController) {
 
         composable("daftarPenjual") {
             DaftarPenjual(
+                modifier = modifier,
+                navController = navController
+            )
+        }
+
+        composable("pesananMasuk") {
+            PesananMasuk(
                 modifier = modifier,
                 navController = navController
             )

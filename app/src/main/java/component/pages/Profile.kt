@@ -3,6 +3,7 @@ package component.pages
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,7 +31,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -107,7 +107,9 @@ fun Profile(modifier: Modifier, navController: NavController) {
                     Row(modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(14.dp),
                         verticalAlignment = Alignment.CenterVertically) {
-                        Column(modifier = Modifier.weight(1f),verticalArrangement = Arrangement.spacedBy(1.dp),
+                        Column(modifier = Modifier.weight(1f)
+                            .clickable { navController.navigate("pesananMasuk") },
+                            verticalArrangement = Arrangement.spacedBy(1.dp),
                             horizontalAlignment = Alignment.CenterHorizontally) {
                             Icon(imageVector = Icons.Default.ShoppingCart, contentDescription = "Close", tint = Color(0xFFFFFFFF), modifier = Modifier.size(45.dp)
                                 .clip(RoundedCornerShape(10.dp))
