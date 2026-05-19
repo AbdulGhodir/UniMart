@@ -118,7 +118,9 @@ fun Profile(modifier: Modifier, navController: NavController) {
                             Text(text = "24", fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = Color.Black)
                             Text(text = "Pesanan", fontWeight = FontWeight.Normal, fontSize = 12.sp, color = Color(0x80000000))
                         }
-                        Column(modifier = Modifier.weight(1f),verticalArrangement = Arrangement.spacedBy(1.dp),
+                        Column(modifier = Modifier.weight(1f)
+                            .clickable { navController.navigate("daftarProduk") },
+                            verticalArrangement = Arrangement.spacedBy(1.dp),
                             horizontalAlignment = Alignment.CenterHorizontally) {
                             Icon(imageVector = Icons.Default.ShoppingCart, contentDescription = "Close", tint = Color(0xFFFFFFFF), modifier = Modifier.size(45.dp)
                                 .clip(RoundedCornerShape(10.dp))
@@ -127,7 +129,9 @@ fun Profile(modifier: Modifier, navController: NavController) {
                             Text(text = "24", fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = Color.Black)
                             Text(text = "Produk", fontWeight = FontWeight.Normal, fontSize = 12.sp, color = Color(0x80000000))
                         }
-                        Column(modifier = Modifier.weight(1f),verticalArrangement = Arrangement.spacedBy(1.dp),
+                        Column(modifier = Modifier.weight(1f)
+                            .clickable { navController.navigate("produkTerjual") },
+                            verticalArrangement = Arrangement.spacedBy(1.dp),
                             horizontalAlignment = Alignment.CenterHorizontally) {
                             Icon(imageVector = Icons.Default.Done, contentDescription = "Close", tint = Color(0xFFFFFFFF), modifier = Modifier.size(45.dp)
                                 .clip(RoundedCornerShape(10.dp))

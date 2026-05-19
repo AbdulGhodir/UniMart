@@ -71,6 +71,8 @@ import component.pages.WelcomePage
 import component.pages.Login
 import component.pages.SplashScreen
 import component.pages.PesananMasuk
+import component.pages.DaftarProduk
+import component.pages.ProdukTerjual
 import model.Barang
 
 class MainActivity : ComponentActivity() {
@@ -200,6 +202,20 @@ fun AppNavigation(modifier: Modifier, navController: NavHostController) {
 
         composable("pesananMasuk") {
             PesananMasuk(
+                modifier = modifier,
+                navController = navController
+            )
+        }
+
+        composable("daftarProduk") {
+            DaftarProduk(
+                modifier = modifier,
+                navController = navController
+            )
+        }
+
+        composable("produkTerjual") {
+            ProdukTerjual(
                 modifier = modifier,
                 navController = navController
             )
