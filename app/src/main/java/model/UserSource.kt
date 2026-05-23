@@ -8,7 +8,7 @@ object UserSource {
         username = "abdul",
         email = "abdul@gmail.com",
         noTelp = "08123456789",
-        isPremium = true,
+        isPremium = false,
         gambar = R.drawable.ic_zap
     )
 }

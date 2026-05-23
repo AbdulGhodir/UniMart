@@ -130,7 +130,7 @@ fun DaftarPenjual(
                     scope.launch {
                         delay(2000)
                         isLoading = false
-                        navController.popBackStack()
+                        navController.navigate("statusPengajuan")
                     }
                 },
                 enabled = !isLoading,

@@ -44,11 +44,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.blockbusteruwu.unimart.R
+import model.PengajuanPremiumSource
 import model.UserSource
 
 @Composable
 fun Profile(modifier: Modifier, navController: NavController) {
     val user = UserSource.user
+    val userEmail = UserSource.user.email;
+    val statusPengajuan = PengajuanPremiumSource.getStatus(userEmail)
+
+    val isPremium = statusPengajuan == "APPROVED"
+    val isPending = statusPengajuan == "PENDING"
+    val isRejected = statusPengajuan == "REJECTED"
     val scrollState = rememberScrollState()
 
     Column(modifier = modifier.fillMaxSize()
@@ -72,7 +79,13 @@ fun Profile(modifier: Modifier, navController: NavController) {
                     Text(text = user.email, fontSize = 12.sp, color = Color(0x80FFFFFF))
                     Button(
                         onClick = {
-                            navController.navigate("daftarPenjual")
+                            if(isPremium){
+                                navController.navigate("statusPengajuan")
+                            } else if (isPending){
+                                navController.navigate("statusPengajuan")
+                            } else {
+                                navController.navigate("daftarPenjual")
+                            }
                         },
                         modifier = Modifier.height(36.dp),
                         colors = ButtonDefaults.buttonColors(
@@ -83,7 +96,7 @@ fun Profile(modifier: Modifier, navController: NavController) {
                         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp)
                     ) {
                         Text(
-                            text = if(user.isPremium) "Premium" else "Daftar Penjual",
+                            text = if(isPremium) "Premium" else if(isPending) "Menunggu" else "Daftar Penjual",
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold
                         )
@@ -97,7 +110,7 @@ fun Profile(modifier: Modifier, navController: NavController) {
             .padding(PaddingValues(horizontal = 14.dp, vertical = 16.dp)),
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            if(user.isPremium) {
+            if(isPremium) {
                 Text(text = "PENJUAL", fontSize = 16.sp, color = Color(0x80000000), fontWeight = FontWeight.SemiBold)
                 Column(modifier = Modifier.fillMaxWidth()
                     .clip(RoundedCornerShape(14.dp))
@@ -170,17 +183,32 @@ fun Profile(modifier: Modifier, navController: NavController) {
                     .background(Color(0x301D3F73))
                     .border(1.dp, Color(0x401D3F73), shape = RoundedCornerShape(14.dp))
                     .padding(PaddingValues(horizontal = 14.dp, vertical = 16.dp))) {
-                    Row(modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(14.dp),
-                        verticalAlignment = Alignment.CenterVertically) {
-                        Icon(imageVector = Icons.Default.Info, contentDescription = "Close", tint = Color(0xFF1D3F73), modifier = Modifier.size(45.dp))
-                        Column(modifier = Modifier.weight(1f),
-                            horizontalAlignment = Alignment.Start) {
-                            Text("AKTIFKAN AKUN PREMIUM", letterSpacing = 0.5.sp, lineHeight = 10.sp, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF1D3F73))
-                            Text("Buka Toko Anda", fontSize = 16.sp, lineHeight = 10.sp, fontWeight = FontWeight.Bold, color = Color(0xFF000000))
-                            Text("Kelola produk & pantau penjualan", lineHeight = 10.sp, fontSize = 12.sp, fontWeight = FontWeight.Normal, color = Color(0x80000000))
+                    if(isPending){
+                        Row(modifier = Modifier.fillMaxWidth().clickable {  navController.navigate("statusPengajuan")},
+                            horizontalArrangement = Arrangement.spacedBy(14.dp),
+                            verticalAlignment = Alignment.CenterVertically) {
+                            Icon(imageVector = Icons.Default.Info, contentDescription = "Close", tint = Color(0xFF1D3F73), modifier = Modifier.size(45.dp))
+                            Column(modifier = Modifier.weight(1f),
+                                horizontalAlignment = Alignment.Start) {
+                                Text("AKTIFKAN AKUN PREMIUM", letterSpacing = 0.5.sp, lineHeight = 10.sp, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF1D3F73))
+                                Text("Buka Toko Anda", fontSize = 16.sp, lineHeight = 10.sp, fontWeight = FontWeight.Bold, color = Color(0xFF000000))
+                                Text("Kelola produk & pantau penjualan", lineHeight = 10.sp, fontSize = 12.sp, fontWeight = FontWeight.Normal, color = Color(0x80000000))
+                            }
+                            Icon(imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = "ArrowRight", tint = Color(0xFF000000), modifier = Modifier.size(30.dp))
                         }
-                        Icon(imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = "ArrowRight", tint = Color(0xFF000000), modifier = Modifier.size(30.dp))
+                    } else {
+                        Row(modifier = Modifier.fillMaxWidth().clickable {  navController.navigate("daftarPenjual")},
+                            horizontalArrangement = Arrangement.spacedBy(14.dp),
+                            verticalAlignment = Alignment.CenterVertically) {
+                            Icon(imageVector = Icons.Default.Info, contentDescription = "Close", tint = Color(0xFF1D3F73), modifier = Modifier.size(45.dp))
+                            Column(modifier = Modifier.weight(1f),
+                                horizontalAlignment = Alignment.Start) {
+                                Text("AKTIFKAN AKUN PREMIUM", letterSpacing = 0.5.sp, lineHeight = 10.sp, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF1D3F73))
+                                Text("Buka Toko Anda", fontSize = 16.sp, lineHeight = 10.sp, fontWeight = FontWeight.Bold, color = Color(0xFF000000))
+                                Text("Kelola produk & pantau penjualan", lineHeight = 10.sp, fontSize = 12.sp, fontWeight = FontWeight.Normal, color = Color(0x80000000))
+                            }
+                            Icon(imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = "ArrowRight", tint = Color(0xFF000000), modifier = Modifier.size(30.dp))
+                        }
                     }
                 }
             }

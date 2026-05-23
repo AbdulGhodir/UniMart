@@ -73,6 +73,7 @@ import component.pages.SplashScreen
 import component.pages.PesananMasuk
 import component.pages.DaftarProduk
 import component.pages.ProdukTerjual
+import component.pages.StatusPengajuan
 import model.Barang
 
 class MainActivity : ComponentActivity() {
@@ -93,7 +94,7 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentRoute = navBackStackEntry?.destination?.route ?: "splashScreen"
-                val noNavBar = listOf("splashScreen", "welcomePage", "login", "register", "daftarObrolan", "detailProduk/{id}", "favorite", "jualProduk")
+                val noNavBar = listOf("splashScreen", "welcomePage", "login", "register", "daftarObrolan", "detailProduk/{id}", "favorite", "jualProduk, statusPengajuan")
 
                 Scaffold(
                     modifier = Modifier
@@ -244,6 +245,13 @@ fun AppNavigation(modifier: Modifier, navController: NavHostController) {
 
         composable("daftarObrolan"){
             DaftarObrolan(
+                modifier = modifier,
+                navController = navController
+            )
+        }
+
+        composable("statusPengajuan"){
+            StatusPengajuan(
                 modifier = modifier,
                 navController = navController
             )
@@ -485,7 +493,7 @@ fun PreviewApp() {
         val navController = rememberNavController()
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route ?: "welcomePage"
-        val noNavBar = listOf("splashScreen", "welcomePage", "login", "register", "daftarObrolan", "detailProduk/{id}", "favorite", "jualProduk")
+        val noNavBar = listOf("splashScreen", "welcomePage", "login", "register", "daftarObrolan", "detailProduk/{id}", "favorite", "jualProduk", "statusPengajuan")
 
         Scaffold(
             modifier = Modifier
