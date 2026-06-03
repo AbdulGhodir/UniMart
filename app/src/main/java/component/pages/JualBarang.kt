@@ -29,11 +29,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,16 +46,17 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.blockbusteruwu.unimart.R
 import component.ui.DropdownInput
 import component.ui.Input
+import component.viewmodel.JualBarangViewModel
+import kotlinx.coroutines.launch
 
 @Composable
-fun JualBarang(modifier: Modifier = Modifier, navController: NavController) {
-    var namaBarang by remember { mutableStateOf("") }
-    var hargaBarang by remember { mutableStateOf("") }
-    var deskripsiBarang by remember { mutableStateOf("") }
+fun JualBarang(modifier: Modifier = Modifier, navController: NavController, viewModel: JualBarangViewModel = viewModel()) {
+
 
     Column (
         modifier = modifier
@@ -184,7 +187,7 @@ fun JualBarang(modifier: Modifier = Modifier, navController: NavController) {
                             .padding(16.dp ,20.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        Input(modifier = Modifier.padding(0.dp, 6.dp), label = "Nama Barang", text = namaBarang, onValueChange = { namaBarang = it })
+                        Input(modifier = Modifier.padding(0.dp, 6.dp), label = "Nama Barang", text = viewModel.namaBarang, onValueChange = { viewModel.onNamaChange(it) })
 
                         val daftarKategori = listOf("Makanan", "Minuman", "Pakaian", "Aksesoris", "Buku", "Perlengkapan", "Perawatan", "Elektronik")
 
@@ -197,18 +200,22 @@ fun JualBarang(modifier: Modifier = Modifier, navController: NavController) {
                                 modifier = Modifier
                                     .weight(1f),
                                 label = "Kategori",
-                                pilihan = daftarKategori
+                                pilihan = daftarKategori,
+                                selectedItem = viewModel.kategoriBarang,
+                                onValueChange = { viewModel.onKategoriChange(it) }
                             )
 
                             DropdownInput(
                                 modifier = Modifier
                                     .weight(1f),
                                 label = "Status",
-                                pilihan = listOf("Baru", "Prelove")
+                                pilihan = listOf("Baru", "Prelove"),
+                                selectedItem = viewModel.statusBarang,
+                                onValueChange = { viewModel.onStatusChange(it) }
                             )
                         }
 
-                        Input(modifier = Modifier.padding(0.dp, 6.dp), label = "Harga", text = hargaBarang, onValueChange = { hargaBarang = it })
+                        Input(modifier = Modifier.padding(0.dp, 6.dp), label = "Harga", text = viewModel.hargaBarang, onValueChange = { viewModel.onHargaChange(it) })
 
                         Column(
                             modifier = Modifier.fillMaxWidth(),
@@ -218,8 +225,8 @@ fun JualBarang(modifier: Modifier = Modifier, navController: NavController) {
                             Text(text = "DESKRIPSI", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSecondary)
 
                             OutlinedTextField(
-                                value = deskripsiBarang,
-                                onValueChange = { deskripsiBarang = it },
+                                value = viewModel.deskripsiBarang,
+                                onValueChange = { viewModel.onDeskripsiChange(it) },
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(120.dp),
@@ -247,8 +254,24 @@ fun JualBarang(modifier: Modifier = Modifier, navController: NavController) {
                 .border(1.dp, MaterialTheme.colorScheme.outline)
                 .padding(16.dp),
         ) {
+            val coroutineScope = rememberCoroutineScope()
+            val snackbarHostState = remember { SnackbarHostState() }
+
             Button(
-                onClick = {  },
+                onClick = {
+                    viewModel.uploadBarang(
+                        onSuccess = {
+                            coroutineScope.launch {
+                                snackbarHostState.showSnackbar("Barang berhasil dipasang di etalase!")
+                            }
+                        },
+                        onError = { errorMessage ->
+                            coroutineScope.launch {
+                                snackbarHostState.showSnackbar(errorMessage)
+                            }
+                        }
+                    )
+                },
                 modifier = Modifier
                     .fillMaxWidth(),
                 shape = RoundedCornerShape(14.dp),
@@ -256,7 +279,8 @@ fun JualBarang(modifier: Modifier = Modifier, navController: NavController) {
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimary,
                 ),
-                contentPadding = PaddingValues(16.dp)
+                contentPadding = PaddingValues(16.dp),
+                enabled = !viewModel.isLoading
             ) {
                 Text(text = "UPLOAD BARANG", fontSize = 16.sp, fontWeight = FontWeight.Bold)
             }

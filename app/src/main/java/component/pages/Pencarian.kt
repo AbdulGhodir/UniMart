@@ -42,28 +42,19 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.painterResource
+import androidx.lifecycle.viewmodel.compose.viewModel
 import api.RetrofitClient
 import androidx.navigation.NavController
 import com.blockbusteruwu.unimart.R
 import component.ui.RowLayout
 import component.ui.SearchInput
+import component.viewmodel.PencarianViewModel
 import model.Barang
 
 @Composable
-fun Pencarian(modifier: Modifier, navController: NavController) {
+fun Pencarian(modifier: Modifier, navController: NavController, viewModel: PencarianViewModel = viewModel()) {
     var search by remember { mutableStateOf("") }
-//    var isLoading by remember { mutableStateOf(true) }
-    var posts by remember { mutableStateOf(emptyList<Barang>()) }
-
-    LaunchedEffect(Unit) {
-        try {
-            posts = RetrofitClient.instance.getPosts()
-//            isLoading = false
-        } catch (e: Exception) {
-//            isLoading = false
-        }
-    }
-    val filteredBarang = posts.filter { it.nama.contains(search, ignoreCase = true) }
+    val filteredBarang = viewModel.semuaBarang.filter { it.nama.contains(search, ignoreCase = true) }
 
     Column(modifier = modifier
         .fillMaxSize()

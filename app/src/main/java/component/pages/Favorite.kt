@@ -23,24 +23,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import api.RetrofitClient
 import component.ui.FavoriteCard
+import component.viewmodel.FavoriteViewModel
 import model.Barang
 
 @Composable
-fun Favorite(modifier: Modifier = Modifier, navController: NavHostController) {
-    var isLoading by remember { mutableStateOf(true) }
-    var posts by remember { mutableStateOf(emptyList<Barang>()) }
-
-    LaunchedEffect(Unit) {
-        try {
-            posts = RetrofitClient.instance.getPosts()
-            isLoading = false
-        } catch (e: Exception) {
-            isLoading = false
-        }
-    }
+fun Favorite(modifier: Modifier = Modifier, navController: NavHostController, viewModel: FavoriteViewModel = viewModel()) {
+    val daftarBarangFavorite = viewModel.listFavorit
 
     Column(
         modifier = modifier.fillMaxSize()
@@ -68,34 +60,22 @@ fun Favorite(modifier: Modifier = Modifier, navController: NavHostController) {
             )
         }
 
-        if (isLoading) {
-            Column(
-                modifier = Modifier.weight(1f).fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                CircularProgressIndicator()
-                Text(text = "Memuat Data...", fontSize = 12.sp, color = Color.Gray)
-            }
-        } else {
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier
-                    .fillMaxSize(),
-                contentPadding = PaddingValues(
-                    top = 16.dp,
-                    start = 16.dp,
-                    end = 16.dp,
-                    bottom = 16.dp
-                )
-            ) {
-                items(posts) { barang ->
-                    FavoriteCard(barang = barang)
-                }
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = Modifier
+                .fillMaxSize(),
+            contentPadding = PaddingValues(
+                top = 16.dp,
+                start = 16.dp,
+                end = 16.dp,
+                bottom = 16.dp
+            )
+        ) {
+            items(daftarBarangFavorite) { barang ->
+                FavoriteCard(barang = barang)
             }
         }
-
     }
 }

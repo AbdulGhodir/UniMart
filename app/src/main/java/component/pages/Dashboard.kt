@@ -25,9 +25,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -37,27 +35,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import api.RetrofitClient
 import com.blockbusteruwu.unimart.R
 import component.ui.RowLayout
-import model.Barang
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
+import androidx.lifecycle.viewmodel.compose.viewModel
+import component.viewmodel.DashboardViewModel
 
 
 @Composable
-fun Dashboard(modifier: Modifier = Modifier, navController: NavController) {
-    var isLoading by remember { mutableStateOf(true) }
-    var posts by remember { mutableStateOf(emptyList<Barang>()) }
-
-    LaunchedEffect(Unit) {
-        try {
-            posts = RetrofitClient.instance.getPosts()
-            isLoading = false
-        } catch (e: Exception) {
-            isLoading = false
-        }
-    }
+fun Dashboard(modifier: Modifier = Modifier, navController: NavController, viewModel: DashboardViewModel = viewModel()) {
+    val dataBarang = viewModel.dataBarang
+    val isLoading = viewModel.isLoading
 
     Column(
         modifier = modifier
@@ -354,7 +342,7 @@ fun Dashboard(modifier: Modifier = Modifier, navController: NavController) {
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        items(posts) { barang ->
+                        items(dataBarang) { barang ->
                             RowLayout(barang = barang, navController = navController)
                         }
                     }
@@ -372,7 +360,7 @@ fun Dashboard(modifier: Modifier = Modifier, navController: NavController) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Murah Meriah < 50k",
+                        text = "Murah Meriah < 500k",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -395,7 +383,8 @@ fun Dashboard(modifier: Modifier = Modifier, navController: NavController) {
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        items(posts) { barang ->
+
+                        items(viewModel.barangMurah) { barang ->
                             RowLayout(barang = barang, navController = navController)
                         }
                     }
@@ -432,7 +421,7 @@ fun Dashboard(modifier: Modifier = Modifier, navController: NavController) {
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        items(posts) { barang ->
+                        items(dataBarang) { barang ->
                             RowLayout(barang = barang, navController = navController)
                         }
                     }

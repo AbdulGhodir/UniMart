@@ -21,6 +21,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Share
@@ -39,15 +41,18 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.blockbusteruwu.unimart.R
 import com.blockbusteruwu.unimart.formatRibuan
+import component.viewmodel.DetailProdukViewModel
 import model.Barang
+import model.FavoriteManager
 import model.UserSource
 
 @Composable
-fun DetailProduk(barang: Barang, modifier: Modifier = Modifier, navController: NavController) {
+fun DetailProduk(barang: Barang, modifier: Modifier = Modifier, navController: NavController, viewModel: DetailProdukViewModel = viewModel()) {
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -218,20 +223,12 @@ fun DetailProduk(barang: Barang, modifier: Modifier = Modifier, navController: N
                 .align(Alignment.BottomCenter),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_message),
-                contentDescription = "chat",
-                modifier = Modifier
-                    .size(40.dp)
-                    .border(1.dp, MaterialTheme.colorScheme.outline, shape = RoundedCornerShape(8.dp))
-                    .padding(7.dp),
-                tint = MaterialTheme.colorScheme.primary
-            )
-
-            Spacer(modifier = Modifier.width(12.dp))
-
             Button(
-                onClick = { },
+                onClick = {
+                    viewModel.beliSekarang(barang) {
+                        navController.navigate("daftarObrolan")
+                    }
+                },
                 modifier = Modifier
                     .weight(1f),
                 shape = RoundedCornerShape(8.dp),
@@ -240,8 +237,18 @@ fun DetailProduk(barang: Barang, modifier: Modifier = Modifier, navController: N
                     contentColor = Color.White
                 )
             ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_message),
+                    contentDescription = "chat",
+                    modifier = Modifier
+                        .size(20.dp),
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
+
                 Text(
-                    text = "Beli Sekarang",
+                    text = "Ajukan COD",
                     modifier = Modifier
                 )
             }
@@ -280,14 +287,14 @@ fun DetailProduk(barang: Barang, modifier: Modifier = Modifier, navController: N
                 )
 
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_favorite),
+                    imageVector = if (FavoriteManager.isFavorit(barang.id)) Icons.Default.Favorite else Icons.Default.FavoriteBorder ,
                     contentDescription = "",
-                    tint = MaterialTheme.colorScheme.onPrimary,
+                    tint = if (FavoriteManager.isFavorit(barang.id)) Color.Red else MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier
                         .size(40.dp)
-                        .clickable { navController.popBackStack() }
+                        .clickable { viewModel.toggleFavorite(barang) }
                         .background(MaterialTheme.colorScheme.onSecondary, shape = CircleShape)
-                        .padding(7.dp)
+                        .padding(7.dp),
                 )
             }
         }

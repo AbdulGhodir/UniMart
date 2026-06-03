@@ -26,9 +26,8 @@ import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DropdownInput(modifier: Modifier = Modifier, label: String, pilihan: List<String>) {
+fun DropdownInput(modifier: Modifier = Modifier, label: String, pilihan: List<String>, selectedItem: String, onValueChange: (String) -> Unit) {
     var isExpanded by remember { mutableStateOf(false) }
-    var selectedItem by remember { mutableStateOf(pilihan[0]) }
 
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -68,7 +67,7 @@ fun DropdownInput(modifier: Modifier = Modifier, label: String, pilihan: List<St
                     DropdownMenuItem(
                         text = { Text(text = item) },
                         onClick = {
-                            selectedItem = item
+                            onValueChange(item)
                             isExpanded = false
                         },
                     )

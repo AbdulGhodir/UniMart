@@ -46,30 +46,20 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import api.RetrofitClient
 import coil.compose.AsyncImage
 import com.blockbusteruwu.unimart.R
 import com.blockbusteruwu.unimart.formatRibuan
 import component.ui.SearchInput
+import component.viewmodel.KelolaProdukViewModel
 import model.Barang
 
 @Composable
-fun KelolaProduk(modifier: Modifier = Modifier, navController: NavController) {
+fun KelolaProduk(modifier: Modifier = Modifier, navController: NavController, viewModel: KelolaProdukViewModel = viewModel()) {
     var search by remember { mutableStateOf("") }
-    var isLoading by remember { mutableStateOf(true) }
-    var posts by remember { mutableStateOf(emptyList<Barang>()) }
-
-    LaunchedEffect(Unit) {
-        try {
-            posts = RetrofitClient.instance.getPosts()
-            isLoading = false
-        } catch (e: Exception) {
-            isLoading = false
-        }
-    }
-
-    val filteredBarang = posts.filter { it.nama.contains(search, ignoreCase = true) }
+    val filteredBarang = viewModel.produkSaya.filter { it.nama.contains(search, ignoreCase = true) }
 
     Column(modifier = modifier.fillMaxSize()
         .background(MaterialTheme.colorScheme.background)) {
@@ -130,7 +120,7 @@ fun KelolaProduk(modifier: Modifier = Modifier, navController: NavController) {
             }
             Spacer(modifier = Modifier.height(10.dp))
 
-            if(isLoading) {
+            if(viewModel.isLoading) {
                 Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     CircularProgressIndicator()
                     Text(text = "Memuat Data...", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSecondary)
