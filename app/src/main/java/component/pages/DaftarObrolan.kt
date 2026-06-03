@@ -126,7 +126,7 @@ fun Obrolan(){
                     .padding(horizontal = 10.dp)
             ) {
                 Text(
-                    text = model.UserSource.user.namaLengkap,
+                    text = model.UserSource.user[0].namaLengkap,
                     fontWeight = FontWeight.Bold
                 )
                 Text(

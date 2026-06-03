@@ -46,19 +46,19 @@ import model.UserSource
 
 fun handleEditProfile(username: String, namaLengkap: String, email: String, noTelp: String) {
     val user = UserSource.user
-    user.username = username
-    user.namaLengkap = namaLengkap
-    user.email = email
-    user.noTelp = noTelp
+    user[0].username = username
+    user[0].namaLengkap = namaLengkap
+    user[0].email = email
+    user[0].noTelp = noTelp
 }
 
 @Composable
 fun EditProfile(modifier: Modifier, navController: NavController) {
     val user = UserSource.user
-    var namaLengkap by remember { mutableStateOf(user.namaLengkap) }
-    var username by remember { mutableStateOf(user.username) }
-    var email by remember { mutableStateOf(user.email) }
-    var noTelp by remember { mutableStateOf(user.noTelp) }
+    var namaLengkap by remember { mutableStateOf(user[0].namaLengkap) }
+    var username by remember { mutableStateOf(user[0].username) }
+    var email by remember { mutableStateOf(user[0].email) }
+    var noTelp by remember { mutableStateOf(user[0].noTelp) }
     val context = LocalContext.current
 
     Column(modifier = modifier.fillMaxSize()
@@ -117,7 +117,7 @@ fun EditProfile(modifier: Modifier, navController: NavController) {
                     shape = RoundedCornerShape(16.dp))
                     .border(BorderStroke(2.dp, Color(0x33FFFFFF)), shape = RoundedCornerShape(16.dp)),
                     contentAlignment = Alignment.Center) {
-                    Text(text = user.username.get(0).uppercase(), color = Color.White)
+                    Text(text = user[0].username.get(0).uppercase(), color = Color.White)
                     Box(modifier = Modifier.background(Color(0x33FFFFFF), shape = CircleShape)
                         .align(Alignment.BottomEnd)
                         .padding(10.dp),

@@ -52,7 +52,7 @@ import model.PengajuanPremiumSource
 
 @Composable
 fun StatusPengajuan(modifier: Modifier = Modifier, navController: NavController) {
-    val userEmail = UserSource.user.email;
+    val userEmail = UserSource.user[0];
     val statusPengajuan = PengajuanPremiumSource.getStatus(userEmail)
 
     val isPremium = statusPengajuan == "APPROVED"

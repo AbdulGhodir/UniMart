@@ -1,5 +1,5 @@
 package model
 
 data class PengajuanPremium(
-    val email: String,    val status: String
+    val user: User,    val status: String
 )

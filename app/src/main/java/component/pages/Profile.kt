@@ -49,9 +49,8 @@ import model.UserSource
 
 @Composable
 fun Profile(modifier: Modifier, navController: NavController) {
-    val user = UserSource.user
-    val userEmail = UserSource.user.email;
-    val statusPengajuan = PengajuanPremiumSource.getStatus(userEmail)
+    val user = UserSource.user[0]
+    val statusPengajuan = PengajuanPremiumSource.getStatus(user)
 
     val isPremium = statusPengajuan == "APPROVED"
     val isPending = statusPengajuan == "PENDING"

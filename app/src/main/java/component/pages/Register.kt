@@ -244,8 +244,8 @@ fun Register(modifier: Modifier = Modifier, navController: NavController){
                             isLoading = false
 
                             if (!username.isEmpty() || !email.isEmpty()) {
-                                UserSource.user.username = username
-                                UserSource.user.email = email
+                                UserSource.user[0].username = username
+                                UserSource.user[0].email = email
                             }
 
                             launch {
