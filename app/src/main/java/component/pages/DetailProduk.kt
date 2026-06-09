@@ -180,7 +180,7 @@ fun DetailProduk(barang: Barang, modifier: Modifier = Modifier, navController: N
                         horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         Image(
-                            painter = painterResource(id = UserSource.user.gambar),
+                            painter = painterResource(id = UserSource.user[0].gambar),
                             contentDescription = "seller",
                             modifier = Modifier
                                 .size(45.dp)
@@ -192,7 +192,7 @@ fun DetailProduk(barang: Barang, modifier: Modifier = Modifier, navController: N
                             )
 
                         Column {
-                            Text(text = UserSource.user.namaLengkap, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                            Text(text = UserSource.user[0].namaLengkap, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                             Text(text = "Seller", color = MaterialTheme.colorScheme.onSecondary, fontSize = 14.sp, fontWeight = FontWeight.Medium)
                         }
                     }
