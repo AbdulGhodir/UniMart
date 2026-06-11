@@ -46,7 +46,6 @@ import androidx.navigation.NavController
 import com.blockbusteruwu.unimart.R
 import component.ui.RowLayout
 import component.ui.SearchInput
-import model.Barang
 import viewmodel.BarangViewModel
 
 @Composable

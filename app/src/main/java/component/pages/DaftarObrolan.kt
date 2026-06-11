@@ -86,7 +86,7 @@ fun DaftarObrolan(modifier: Modifier = Modifier, navController: NavController){
                     .padding(horizontal = 16.dp)
             ) {
                 for (i in 1..25) {
-                    Obrolan()
+                    Obrolan(navController)
                     Spacer(modifier = Modifier
                         .height(1.dp)
                         .fillMaxWidth()
@@ -98,10 +98,13 @@ fun DaftarObrolan(modifier: Modifier = Modifier, navController: NavController){
 }
 
 @Composable
-fun Obrolan(){
+fun Obrolan(navController: NavController){
     Card(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .clickable {
+                navController.navigate("isiChat")
+            },
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.background
         ),

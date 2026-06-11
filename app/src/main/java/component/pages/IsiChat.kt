@@ -42,7 +42,7 @@ import com.blockbusteruwu.unimart.R
 import com.blockbusteruwu.unimart.ui.theme.UniMartTheme
 
 @Composable
-fun RuangObrolan(modifier: Modifier = Modifier, navController: NavController) {
+fun IsiChat(modifier: Modifier = Modifier, navController: NavController) {
     var textInput by remember { mutableStateOf("") }
 
     Column(
@@ -271,15 +271,5 @@ fun KartuProduk() {
                 )
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun RuangObrolanPreview() {
-    UniMartTheme {
-        val navController = rememberNavController()
-
-        RuangObrolan(navController = navController)
     }
 }

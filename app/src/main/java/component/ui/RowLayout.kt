@@ -48,7 +48,7 @@ fun RowLayout(barang: Barang, navController: NavController) {
             AsyncImage(
                 model = barang.gambar,
                 contentDescription = barang.nama,
-                placeholder = painterResource(id = R.drawable.img_barang1),
+                placeholder = painterResource(id = R.drawable.img_loading),
                 error = painterResource(id = R.drawable.img_barang2),
                 modifier = Modifier
                     .clip(RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp))

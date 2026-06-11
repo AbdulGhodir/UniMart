@@ -196,7 +196,7 @@ fun JualBarang(modifier: Modifier = Modifier, navController: NavController, bara
                             .padding(16.dp ,20.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        Input(modifier = Modifier.padding(0.dp, 6.dp), label = "Nama Barang", text = namaBarang, onValueChange = { namaBarang = it })
+                        Input(modifier = Modifier.padding(0.dp, 6.dp), label = "Nama Barang", text = viewModel.namaBarang, onValueChange = { viewModel.onNamaChange(it) })
 
                         val daftarKategori = listOf("Makanan", "Minuman", "Pakaian", "Aksesoris", "Buku", "Perlengkapan", "Perawatan", "Elektronik")
 

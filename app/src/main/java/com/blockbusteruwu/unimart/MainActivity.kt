@@ -72,6 +72,7 @@ import component.pages.Login
 import component.pages.SplashScreen
 import component.pages.PesananMasuk
 import component.pages.DaftarProduk
+import component.pages.IsiChat
 import component.pages.ProdukTerjual
 import component.pages.StatusPengajuan
 import model.Barang
@@ -175,7 +176,6 @@ fun AppNavigation(
             )
         }
 
-
         composable("home") {
             Dashboard(
                 modifier = modifier,
@@ -275,6 +275,13 @@ fun AppNavigation(
 
         composable("daftarObrolan"){
             DaftarObrolan(
+                modifier = modifier,
+                navController = navController
+            )
+        }
+
+        composable("isiChat") {
+            IsiChat(
                 modifier = modifier,
                 navController = navController
             )
