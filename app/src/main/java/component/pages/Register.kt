@@ -52,10 +52,10 @@ import androidx.navigation.compose.rememberNavController
 import com.blockbusteruwu.unimart.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import model.UserSource
+import viewmodel.UserViewModel
 
 @Composable
-fun Register(modifier: Modifier = Modifier, navController: NavController){
+fun Register(modifier: Modifier = Modifier, navController: NavController, userViewModel: UserViewModel){
     var isLoading by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -238,24 +238,38 @@ fun Register(modifier: Modifier = Modifier, navController: NavController){
 
                 Button(
                     onClick = {
-                        coroutineScope.launch {
-                            isLoading = true
-                            delay(2000)
-                            isLoading = false
-
-                            if (!username.isEmpty() || !email.isEmpty()) {
-                                UserSource.user[0].username = username
-                                UserSource.user[0].email = email
+                        when {
+                            username.isEmpty() || email.isEmpty() || password.isEmpty() -> {
+                                coroutineScope.launch {
+                                    snackbarHostState.showSnackbar("Semua kolom wajib diisi!")
+                                }
                             }
-
-                            launch {
-                                snackbarHostState.showSnackbar("Registrasi berhasil!")
+                            password != confirmPassword -> {
+                                coroutineScope.launch {
+                                    snackbarHostState.showSnackbar("Password dan konfirmasi tidak cocok!")
+                                }
                             }
-
-                            delay(1000)
-
-                            navController.navigate("login") {
-                                popUpTo("register") { inclusive = true }
+                            password.length < 6 -> {
+                                coroutineScope.launch {
+                                    snackbarHostState.showSnackbar("Password minimal 6 karakter!")
+                                }
+                            }
+                            else -> {
+                                isLoading = true
+                                userViewModel.register(username, email, password) { success, errorMsg ->
+                                    coroutineScope.launch {
+                                        isLoading = false
+                                        if (success) {
+                                            snackbarHostState.showSnackbar("Registrasi berhasil!")
+                                            delay(1000)
+                                            navController.navigate("login") {
+                                                popUpTo("register") { inclusive = true }
+                                            }
+                                        } else {
+                                            snackbarHostState.showSnackbar(errorMsg ?: "Registrasi gagal!")
+                                        }
+                                    }
+                                }
                             }
                         }
                     },

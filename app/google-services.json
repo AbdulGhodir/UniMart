@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "843263447438",
+    "project_id": "unimart-e5570",
+    "storage_bucket": "unimart-e5570.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:843263447438:android:33c5f7aefb76e55669d4df",
+        "android_client_info": {
+          "package_name": "com.blockbusteruwu.unimart"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDWboC23uGt15HKM6rpKjlJhxxR3vIjAAU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

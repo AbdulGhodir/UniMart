@@ -24,23 +24,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import api.RetrofitClient
 import component.ui.FavoriteCard
 import model.Barang
+import viewmodel.BarangViewModel
 
 @Composable
-fun Favorite(modifier: Modifier = Modifier, navController: NavHostController) {
-    var isLoading by remember { mutableStateOf(true) }
-    var posts by remember { mutableStateOf(emptyList<Barang>()) }
+fun Favorite(modifier: Modifier = Modifier, navController: NavHostController, barangViewModel: BarangViewModel) {
+    val posts by barangViewModel.products
+    val isLoading by barangViewModel.isLoading
 
-    LaunchedEffect(Unit) {
-        try {
-            posts = RetrofitClient.instance.getPosts()
-            isLoading = false
-        } catch (e: Exception) {
-            isLoading = false
-        }
-    }
 
     Column(
         modifier = modifier.fillMaxSize()

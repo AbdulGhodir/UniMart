@@ -41,25 +41,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import api.RetrofitClient
-import com.blockbusteruwu.unimart.PreviewApp
 import com.blockbusteruwu.unimart.R
-import com.blockbusteruwu.unimart.ui.theme.UniMartTheme
-import component.ui.ColumnLayout
-import model.UserSource
-import model.PengajuanPremium
-import model.PengajuanPremiumSource
+import viewmodel.UserViewModel
 
 @Composable
-fun StatusPengajuan(modifier: Modifier = Modifier, navController: NavController) {
-    val userEmail = UserSource.user[0];
-    val statusPengajuan = PengajuanPremiumSource.getStatus(userEmail)
+fun StatusPengajuan(modifier: Modifier = Modifier, navController: NavController, userViewModel: UserViewModel) {
+    val user by userViewModel.currentUser
+    val pengajuan by userViewModel.pengajuan
+    val statusPengajuan = pengajuan?.status ?: "NOT_SUBMITTED"
 
-    val isPremium = statusPengajuan == "APPROVED"
+    val isPremium = user.isPremium || statusPengajuan == "APPROVED"
     val isPending = statusPengajuan == "PENDING"
     val isRejected = statusPengajuan == "REJECTED"
-
-    var isLoading by remember { mutableStateOf(true) }
 
 
     Column(
@@ -267,13 +260,5 @@ fun StatusPengajuan(modifier: Modifier = Modifier, navController: NavController)
 //                }
 //        }
 //    }
-}
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DashboardPreview() {
-    UniMartTheme {
-        StatusPengajuan(navController = rememberNavController())
-    }
-}
+    } // end outer Column
+} // end StatusPengajuan

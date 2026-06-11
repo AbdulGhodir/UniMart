@@ -42,23 +42,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import component.ui.Input
-import model.UserSource
-
-fun handleEditProfile(username: String, namaLengkap: String, email: String, noTelp: String) {
-    val user = UserSource.user
-    user[0].username = username
-    user[0].namaLengkap = namaLengkap
-    user[0].email = email
-    user[0].noTelp = noTelp
-}
+import viewmodel.UserViewModel
 
 @Composable
-fun EditProfile(modifier: Modifier, navController: NavController) {
-    val user = UserSource.user
-    var namaLengkap by remember { mutableStateOf(user[0].namaLengkap) }
-    var username by remember { mutableStateOf(user[0].username) }
-    var email by remember { mutableStateOf(user[0].email) }
-    var noTelp by remember { mutableStateOf(user[0].noTelp) }
+fun EditProfile(modifier: Modifier, navController: NavController, userViewModel: UserViewModel) {
+    val user = userViewModel.currentUser.value
+    var namaLengkap by remember { mutableStateOf(user.namaLengkap) }
+    var username by remember { mutableStateOf(user.username) }
+    var email by remember { mutableStateOf(user.email) }
+    var noTelp by remember { mutableStateOf(user.noTelp) }
     val context = LocalContext.current
 
     Column(modifier = modifier.fillMaxSize()
@@ -93,13 +85,19 @@ fun EditProfile(modifier: Modifier, navController: NavController) {
                     )
                 }
                 Button(onClick = {
-                    navController.navigate("profile") {
-                        popUpTo(navController.graph.startDestinationId) { saveState = true }
-                        launchSingleTop = true
-                        restoreState = true
+                    userViewModel.updateProfile(namaLengkap, username, noTelp) { success ->
+                        if (success) {
+                            Toast.makeText(context, "Berhasil disimpan", Toast.LENGTH_SHORT).show()
+                            navController.navigate("profile") {
+                                popUpTo(navController.graph.startDestinationId) { saveState = true }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        } else {
+                            Toast.makeText(context, "Gagal menyimpan", Toast.LENGTH_SHORT).show()
+                        }
                     }
-                    handleEditProfile(username, namaLengkap, email, noTelp)
-                    Toast.makeText(context, "Berhasil disimpan", Toast.LENGTH_SHORT).show() }, modifier = Modifier.height(40.dp)
+                }, modifier = Modifier.height(40.dp)
                     .width(115.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0x33FFFFFF),
@@ -117,7 +115,7 @@ fun EditProfile(modifier: Modifier, navController: NavController) {
                     shape = RoundedCornerShape(16.dp))
                     .border(BorderStroke(2.dp, Color(0x33FFFFFF)), shape = RoundedCornerShape(16.dp)),
                     contentAlignment = Alignment.Center) {
-                    Text(text = user[0].username.get(0).uppercase(), color = Color.White)
+                    Text(text = if (user.username.isNotEmpty()) user.username.get(0).uppercase() else "U", color = Color.White)
                     Box(modifier = Modifier.background(Color(0x33FFFFFF), shape = CircleShape)
                         .align(Alignment.BottomEnd)
                         .padding(10.dp),
@@ -135,7 +133,7 @@ fun EditProfile(modifier: Modifier, navController: NavController) {
             verticalArrangement = Arrangement.spacedBy(16.dp)) {
             Input(label = "Nama Lengkap", text = namaLengkap, onValueChange = { namaLengkap = it })
             Input(label = "Username", text = username, onValueChange = { username = it })
-            Input(label = "Email", text = email, onValueChange = { email = it })
+            Input(label = "Email", text = email, onValueChange = { /* Read only */ })
             Input(label = "No. Telepon", text = noTelp, onValueChange = { noTelp = it })
         }
     }

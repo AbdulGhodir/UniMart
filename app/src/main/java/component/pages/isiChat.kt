@@ -96,14 +96,12 @@ fun RuangObrolan(modifier: Modifier = Modifier, navController: NavController) {
             }
         }
 
-        // 2. Area Chat
         Column(
             modifier = Modifier
                 .weight(1f)
                 .verticalScroll(rememberScrollState())
                 .padding(bottom = 16.dp)
         ) {
-            // Tanggal
             Box(
                 modifier = Modifier
                     .fillMaxWidth()

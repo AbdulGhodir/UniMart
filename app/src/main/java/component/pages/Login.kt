@@ -21,11 +21,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.blockbusteruwu.unimart.R
+import viewmodel.UserViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun Login(modifier: Modifier = Modifier, navController: NavController) {
+fun Login(modifier: Modifier = Modifier, navController: NavController, userViewModel: UserViewModel) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
@@ -153,19 +154,25 @@ fun Login(modifier: Modifier = Modifier, navController: NavController) {
 
             Button(
                 onClick = {
-                    coroutineScope.launch {
-                        isLoading = true
-                        delay(2000)
-                        isLoading = false
-
-                        launch {
-                            snackbarHostState.showSnackbar("Login berhasil!")
+                    if (email.isEmpty() || password.isEmpty()) {
+                        coroutineScope.launch {
+                            snackbarHostState.showSnackbar("Email dan password tidak boleh kosong!")
                         }
-
-                        delay(1000)
-
-                        navController.navigate("home") {
-                            popUpTo("login") { inclusive = true }
+                        return@Button
+                    }
+                    isLoading = true
+                    userViewModel.login(email, password) { success, errorMsg ->
+                        isLoading = false
+                        coroutineScope.launch {
+                            if (success) {
+                                snackbarHostState.showSnackbar("Login berhasil!")
+                                delay(1000)
+                                navController.navigate("home") {
+                                    popUpTo("login") { inclusive = true }
+                                }
+                            } else {
+                                snackbarHostState.showSnackbar(errorMsg ?: "Login gagal!")
+                            }
                         }
                     }
                 },

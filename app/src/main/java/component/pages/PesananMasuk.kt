@@ -20,24 +20,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import api.RetrofitClient
-import com.blockbusteruwu.unimart.R
+import viewmodel.BarangViewModel
 import component.ui.ColumnLayout
-import model.Barang
 
 @Composable
-fun PesananMasuk(modifier: Modifier = Modifier, navController: NavController) {
-    var isLoading by remember { mutableStateOf(true) }
-    var posts by remember { mutableStateOf(emptyList<Barang>()) }
-
-    LaunchedEffect(Unit) {
-        try {
-            posts = RetrofitClient.instance.getPosts()
-            isLoading = false
-        } catch (e: Exception) {
-            isLoading = false
-        }
-    }
+fun PesananMasuk(modifier: Modifier = Modifier, navController: NavController, barangViewModel: BarangViewModel) {
+    val posts by barangViewModel.products
+    val isLoading by barangViewModel.isLoading
 
     Column(
         modifier = modifier

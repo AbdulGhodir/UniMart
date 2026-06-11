@@ -1,6 +1,5 @@
 package component.pages
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -44,7 +43,6 @@ import coil.compose.AsyncImage
 import com.blockbusteruwu.unimart.R
 import com.blockbusteruwu.unimart.formatRibuan
 import model.Barang
-import model.UserSource
 
 @Composable
 fun DetailProduk(barang: Barang, modifier: Modifier = Modifier, navController: NavController) {
@@ -129,7 +127,7 @@ fun DetailProduk(barang: Barang, modifier: Modifier = Modifier, navController: N
                             verticalArrangement = Arrangement.spacedBy((-4).dp)
                         ) {
                             Text(text = "Status", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSecondary)
-                            Text(text = "Prelove", fontWeight = FontWeight.Medium)
+                            Text(text = barang.status.ifEmpty { "-" }, fontWeight = FontWeight.Medium)
                         }
                     }
                 }
@@ -174,20 +172,20 @@ fun DetailProduk(barang: Barang, modifier: Modifier = Modifier, navController: N
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
-                        Image(
-                            painter = painterResource(id = UserSource.user[0].gambar),
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_user),
                             contentDescription = "seller",
+                            tint = MaterialTheme.colorScheme.secondary,
                             modifier = Modifier
                                 .size(45.dp)
                                 .clip(CircleShape)
                                 .background(Color.White)
                                 .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape)
                                 .padding(6.dp),
-
-                            )
+                        )
 
                         Column {
-                            Text(text = UserSource.user[0].namaLengkap, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                            Text(text = barang.sellerId.ifEmpty { "UniMart Seller" }, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                             Text(text = "Seller", color = MaterialTheme.colorScheme.onSecondary, fontSize = 14.sp, fontWeight = FontWeight.Medium)
                         }
                     }

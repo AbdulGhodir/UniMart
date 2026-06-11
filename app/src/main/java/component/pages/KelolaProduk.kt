@@ -47,27 +47,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import api.RetrofitClient
 import coil.compose.AsyncImage
 import com.blockbusteruwu.unimart.R
 import com.blockbusteruwu.unimart.formatRibuan
 import component.ui.SearchInput
 import model.Barang
+import viewmodel.BarangViewModel
 
 @Composable
-fun KelolaProduk(modifier: Modifier = Modifier, navController: NavController) {
+fun KelolaProduk(modifier: Modifier = Modifier, navController: NavController, barangViewModel: BarangViewModel) {
+    val context = androidx.compose.ui.platform.LocalContext.current
     var search by remember { mutableStateOf("") }
-    var isLoading by remember { mutableStateOf(true) }
-    var posts by remember { mutableStateOf(emptyList<Barang>()) }
+    val posts by barangViewModel.products
+    val isLoading by barangViewModel.isLoading
 
-    LaunchedEffect(Unit) {
-        try {
-            posts = RetrofitClient.instance.getPosts()
-            isLoading = false
-        } catch (e: Exception) {
-            isLoading = false
-        }
-    }
 
     val filteredBarang = posts.filter { it.nama.contains(search, ignoreCase = true) }
 
@@ -171,8 +164,29 @@ fun KelolaProduk(modifier: Modifier = Modifier, navController: NavController) {
                                             Box(modifier = Modifier.weight(1f)) {
                                                 Text(text = barang.nama, fontSize = 16.sp, fontWeight = FontWeight.Bold)
                                             }
-                                            IconButton(onClick = {}) {
-                                                Icon(imageVector = Icons.Default.Menu, contentDescription = "Menu", tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
+                                            var showMenu by remember { mutableStateOf(false) }
+                                            Box {
+                                                IconButton(onClick = { showMenu = true }) {
+                                                    Icon(imageVector = Icons.Default.Menu, contentDescription = "Menu", tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
+                                                }
+                                                androidx.compose.material3.DropdownMenu(
+                                                    expanded = showMenu,
+                                                    onDismissRequest = { showMenu = false }
+                                                ) {
+                                                    androidx.compose.material3.DropdownMenuItem(
+                                                        text = { Text("Hapus") },
+                                                        onClick = {
+                                                            showMenu = false
+                                                            barangViewModel.deleteProduct(barang.id) { success ->
+                                                                if (success) {
+                                                                    android.widget.Toast.makeText(context, "Produk berhasil dihapus!", android.widget.Toast.LENGTH_SHORT).show()
+                                                                } else {
+                                                                    android.widget.Toast.makeText(context, "Gagal menghapus produk!", android.widget.Toast.LENGTH_SHORT).show()
+                                                                }
+                                                            }
+                                                        }
+                                                    )
+                                                }
                                             }
                                         }
                                         Text(text = "Rp ${barang.harga.formatRibuan()}", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)

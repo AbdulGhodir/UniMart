@@ -44,15 +44,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.blockbusteruwu.unimart.R
-import model.PengajuanPremiumSource
-import model.UserSource
+import viewmodel.UserViewModel
+import androidx.compose.runtime.getValue
 
 @Composable
-fun Profile(modifier: Modifier, navController: NavController) {
-    val user = UserSource.user[0]
-    val statusPengajuan = PengajuanPremiumSource.getStatus(user)
+fun Profile(modifier: Modifier, navController: NavController, userViewModel: UserViewModel) {
+    val user by userViewModel.currentUser
+    val pengajuan by userViewModel.pengajuan
+    val statusPengajuan = pengajuan?.status ?: "NOT_SUBMITTED"
 
-    val isPremium = statusPengajuan == "APPROVED"
+    val isPremium = user.isPremium || statusPengajuan == "APPROVED"
     val isPending = statusPengajuan == "PENDING"
     val isRejected = statusPengajuan == "REJECTED"
     val scrollState = rememberScrollState()

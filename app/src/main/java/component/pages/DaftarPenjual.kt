@@ -21,13 +21,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.blockbusteruwu.unimart.R
-import kotlinx.coroutines.delay
+import viewmodel.UserViewModel
 import kotlinx.coroutines.launch
 
 @Composable
 fun DaftarPenjual(
     modifier: Modifier = Modifier,
-    navController: NavController
+    navController: NavController,
+    userViewModel: UserViewModel
 ) {
     var nama by remember { mutableStateOf("") }
     var npm by remember { mutableStateOf("") }
@@ -127,10 +128,17 @@ fun DaftarPenjual(
             Button(
                 onClick = {
                     isLoading = true
-                    scope.launch {
-                        delay(2000)
+                    userViewModel.submitPengajuan(
+                        npm = npm,
+                        fakultas = fakultas,
+                        prodi = prodi,
+                        alamat = alamat,
+                        noTelp = noTelp
+                    ) { success ->
                         isLoading = false
-                        navController.navigate("statusPengajuan")
+                        if (success) {
+                            navController.navigate("statusPengajuan")
+                        }
                     }
                 },
                 enabled = !isLoading,

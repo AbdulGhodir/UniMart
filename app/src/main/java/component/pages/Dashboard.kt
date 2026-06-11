@@ -37,27 +37,21 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import api.RetrofitClient
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import viewmodel.BarangViewModel
 import com.blockbusteruwu.unimart.R
 import component.ui.RowLayout
 import model.Barang
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 
 
 @Composable
-fun Dashboard(modifier: Modifier = Modifier, navController: NavController) {
-    var isLoading by remember { mutableStateOf(true) }
-    var posts by remember { mutableStateOf(emptyList<Barang>()) }
+fun Dashboard(modifier: Modifier = Modifier, navController: NavController, barangViewModel: BarangViewModel) {
+    val posts by barangViewModel.products
+    val isLoading by barangViewModel.isLoading
 
-    LaunchedEffect(Unit) {
-        try {
-            posts = RetrofitClient.instance.getPosts()
-            isLoading = false
-        } catch (e: Exception) {
-            isLoading = false
-        }
-    }
+
+
 
     Column(
         modifier = modifier

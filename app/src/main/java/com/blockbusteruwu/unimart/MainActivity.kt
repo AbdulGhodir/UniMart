@@ -75,6 +75,8 @@ import component.pages.DaftarProduk
 import component.pages.ProdukTerjual
 import component.pages.StatusPengajuan
 import model.Barang
+import viewmodel.BarangViewModel
+import viewmodel.UserViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -95,6 +97,9 @@ class MainActivity : ComponentActivity() {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentRoute = navBackStackEntry?.destination?.route ?: "splashScreen"
                 val noNavBar = listOf("splashScreen", "welcomePage", "login", "register", "daftarObrolan", "detailProduk/{id}", "favorite", "jualProduk, statusPengajuan")
+
+                val barangViewModel: BarangViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+                val userViewModel: UserViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
 
                 Scaffold(
                     modifier = Modifier
@@ -117,7 +122,12 @@ class MainActivity : ComponentActivity() {
                     },
                     floatingActionButtonPosition = FabPosition.Center
                 ) { innerPadding ->
-                    AppNavigation(modifier = Modifier.padding(innerPadding) , navController = navController)
+                    AppNavigation(
+                        modifier = Modifier.padding(innerPadding),
+                        navController = navController,
+                        barangViewModel = barangViewModel,
+                        userViewModel = userViewModel
+                    )
                 }
             }
         }
@@ -125,7 +135,12 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun AppNavigation(modifier: Modifier, navController: NavHostController) {
+fun AppNavigation(
+    modifier: Modifier,
+    navController: NavHostController,
+    barangViewModel: BarangViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
+    userViewModel: UserViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+) {
     NavHost(
         navController = navController,
         startDestination = "splashScreen"
@@ -147,14 +162,16 @@ fun AppNavigation(modifier: Modifier, navController: NavHostController) {
         composable("register") {
             Register(
                 modifier = modifier,
-                navController = navController
+                navController = navController,
+                userViewModel = userViewModel
             )
         }
 
         composable("login") {
             Login(
                 modifier = modifier,
-                navController = navController
+                navController = navController,
+                userViewModel = userViewModel
             )
         }
 
@@ -162,84 +179,97 @@ fun AppNavigation(modifier: Modifier, navController: NavHostController) {
         composable("home") {
             Dashboard(
                 modifier = modifier,
-                navController = navController
+                navController = navController,
+                barangViewModel = barangViewModel
             )
         }
 
         composable("search") {
             Pencarian(
                 modifier = modifier,
-                navController = navController
+                navController = navController,
+                barangViewModel = barangViewModel
             )
         }
 
         composable("jualProduk") {
             JualBarang(
                 modifier = modifier,
-                navController = navController
+                navController = navController,
+                barangViewModel = barangViewModel,
+                userViewModel = userViewModel
             )
         }
 
         composable("history") {
             History(
                 modifier = modifier,
-                navController = navController
+                navController = navController,
+                barangViewModel = barangViewModel
             )
         }
 
         composable("profile") {
             Profile(
                 modifier = modifier,
-                navController = navController
+                navController = navController,
+                userViewModel = userViewModel
             )
         }
 
         composable("daftarPenjual") {
             DaftarPenjual(
                 modifier = modifier,
-                navController = navController
+                navController = navController,
+                userViewModel = userViewModel
             )
         }
 
         composable("pesananMasuk") {
             PesananMasuk(
                 modifier = modifier,
-                navController = navController
+                navController = navController,
+                barangViewModel = barangViewModel
             )
         }
 
         composable("daftarProduk") {
             DaftarProduk(
                 modifier = modifier,
-                navController = navController
+                navController = navController,
+                barangViewModel = barangViewModel
             )
         }
 
         composable("produkTerjual") {
             ProdukTerjual(
                 modifier = modifier,
-                navController = navController
+                navController = navController,
+                barangViewModel = barangViewModel
             )
         }
 
         composable("editProfile") {
             EditProfile(
                 modifier = modifier,
-                navController = navController
+                navController = navController,
+                userViewModel = userViewModel
             )
         }
 
         composable("kelolaProduk") {
             KelolaProduk(
                 modifier = modifier,
-                navController = navController
+                navController = navController,
+                barangViewModel = barangViewModel
             )
         }
 
         composable("favorite") {
             Favorite(
                 modifier = modifier,
-                navController = navController
+                navController = navController,
+                barangViewModel = barangViewModel
             )
         }
 
@@ -253,45 +283,19 @@ fun AppNavigation(modifier: Modifier, navController: NavHostController) {
         composable("statusPengajuan"){
             StatusPengajuan(
                 modifier = modifier,
-                navController = navController
+                navController = navController,
+                userViewModel = userViewModel
             )
         }
 
         composable("detailProduk/{id}") { backStackEntry ->
             val idProduk = backStackEntry.arguments?.getString("id")
-            var isLoading by remember { mutableStateOf(true) }
-            var barang by remember { mutableStateOf<Barang?>(null) }
-
-            LaunchedEffect(Unit) {
-                try {
-                    val posts =
-                        RetrofitClient.instance.getPosts()
-
-                    barang =
-                        posts.find {
-                            it.id.toString() == idProduk
-                        }
-                } catch (e: Exception) {
-                    barang = null
-                } finally {
-                    isLoading = false
-                }
-
-            }
+            val barang = barangViewModel.products.value.find { it.id.toString() == idProduk }
 
             when {
-                isLoading -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                }
-
                 barang != null -> {
                     DetailProduk(
-                        barang = barang!!,
+                        barang = barang,
                         modifier = modifier,
                         navController = navController
                     )

@@ -49,11 +49,18 @@ import com.blockbusteruwu.unimart.R
 import component.ui.DropdownInput
 import component.ui.Input
 
+import viewmodel.BarangViewModel
+import viewmodel.UserViewModel
+
 @Composable
-fun JualBarang(modifier: Modifier = Modifier, navController: NavController) {
+fun JualBarang(modifier: Modifier = Modifier, navController: NavController, barangViewModel: BarangViewModel, userViewModel: UserViewModel) {
+    val context = androidx.compose.ui.platform.LocalContext.current
     var namaBarang by remember { mutableStateOf("") }
     var hargaBarang by remember { mutableStateOf("") }
     var deskripsiBarang by remember { mutableStateOf("") }
+    val daftarKategori = listOf("Makanan", "Minuman", "Pakaian", "Aksesoris", "Buku", "Perlengkapan", "Perawatan", "Elektronik")
+    var kategori by remember { mutableStateOf(daftarKategori[0]) }
+    var status by remember { mutableStateOf("Baru") }
 
     Column (
         modifier = modifier
@@ -186,8 +193,6 @@ fun JualBarang(modifier: Modifier = Modifier, navController: NavController) {
                     ) {
                         Input(modifier = Modifier.padding(0.dp, 6.dp), label = "Nama Barang", text = namaBarang, onValueChange = { namaBarang = it })
 
-                        val daftarKategori = listOf("Makanan", "Minuman", "Pakaian", "Aksesoris", "Buku", "Perlengkapan", "Perawatan", "Elektronik")
-
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth(),
@@ -197,14 +202,18 @@ fun JualBarang(modifier: Modifier = Modifier, navController: NavController) {
                                 modifier = Modifier
                                     .weight(1f),
                                 label = "Kategori",
-                                pilihan = daftarKategori
+                                pilihan = daftarKategori,
+                                selectedItem = kategori,
+                                onItemSelected = { kategori = it }
                             )
 
                             DropdownInput(
                                 modifier = Modifier
                                     .weight(1f),
                                 label = "Status",
-                                pilihan = listOf("Baru", "Prelove")
+                                pilihan = listOf("Baru", "Prelove"),
+                                selectedItem = status,
+                                onItemSelected = { status = it }
                             )
                         }
 
@@ -248,7 +257,31 @@ fun JualBarang(modifier: Modifier = Modifier, navController: NavController) {
                 .padding(16.dp),
         ) {
             Button(
-                onClick = {  },
+                onClick = {
+                    if (namaBarang.isNotEmpty() && hargaBarang.isNotEmpty()) {
+                        val harga = hargaBarang.toIntOrNull() ?: 0
+                        val gambar = "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_t.png"
+                        val sellerId = userViewModel.currentUser.value.email
+                        barangViewModel.addProduct(
+                            nama = namaBarang,
+                            harga = harga,
+                            deskripsi = deskripsiBarang,
+                            kategori = kategori,
+                            gambar = gambar,
+                            status = status,
+                            sellerId = sellerId
+                        ) { success ->
+                            if (success) {
+                                android.widget.Toast.makeText(context, "Barang berhasil ditambahkan!", android.widget.Toast.LENGTH_SHORT).show()
+                                navController.popBackStack()
+                            } else {
+                                android.widget.Toast.makeText(context, "Gagal menambahkan barang!", android.widget.Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    } else {
+                        android.widget.Toast.makeText(context, "Harap isi nama dan harga barang!", android.widget.Toast.LENGTH_SHORT).show()
+                    }
+                },
                 modifier = Modifier
                     .fillMaxWidth(),
                 shape = RoundedCornerShape(14.dp),
