@@ -3,16 +3,13 @@ package component.viewmodel
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import api.RetrofitClient
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import model.Barang
+import repository.FirestoreRepository
 
-class DashboardViewModel: ViewModel() {
+class DashboardViewModel(private val repository: FirestoreRepository = FirestoreRepository()) : ViewModel() {
     var dataBarang by mutableStateOf<List<Barang>>(emptyList())
         private set
 
@@ -30,8 +27,8 @@ class DashboardViewModel: ViewModel() {
         viewModelScope.launch {
             isLoading = true
             try {
-                dataBarang = RetrofitClient.instance.getPosts()
-                barangMurah = dataBarang.filter { it.harga <= 500000 }
+                dataBarang = repository.getProducts()
+                barangMurah = dataBarang.filter { it.harga <= 50000 }
                 isLoading = false
             } catch (e: Exception) {
                 dataBarang = emptyList()

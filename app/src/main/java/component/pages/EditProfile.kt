@@ -133,7 +133,7 @@ fun EditProfile(modifier: Modifier, navController: NavController, userViewModel:
             verticalArrangement = Arrangement.spacedBy(16.dp)) {
             Input(label = "Nama Lengkap", text = namaLengkap, onValueChange = { namaLengkap = it })
             Input(label = "Username", text = username, onValueChange = { username = it })
-            Input(label = "Email", text = email, onValueChange = { /* Read only */ })
+            Input(label = "Email", text = email, onValueChange = { email = it })
             Input(label = "No. Telepon", text = noTelp, onValueChange = { noTelp = it })
         }
     }

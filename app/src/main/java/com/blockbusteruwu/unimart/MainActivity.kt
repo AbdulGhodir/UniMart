@@ -179,8 +179,7 @@ fun AppNavigation(
         composable("home") {
             Dashboard(
                 modifier = modifier,
-                navController = navController,
-                barangViewModel = barangViewModel
+                navController = navController
             )
         }
 
@@ -268,8 +267,7 @@ fun AppNavigation(
         composable("favorite") {
             Favorite(
                 modifier = modifier,
-                navController = navController,
-                barangViewModel = barangViewModel
+                navController = navController
             )
         }
 
