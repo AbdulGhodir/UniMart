@@ -219,7 +219,7 @@ fun AppNavigation(
             History(
                 modifier = modifier,
                 navController = navController,
-                barangViewModel = barangViewModel
+                userViewModel = userViewModel
             )
         }
 
@@ -243,7 +243,8 @@ fun AppNavigation(
             PesananMasuk(
                 modifier = modifier,
                 navController = navController,
-                barangViewModel = barangViewModel
+                barangViewModel = barangViewModel,
+                userViewModel = userViewModel
             )
         }
 
@@ -251,7 +252,8 @@ fun AppNavigation(
             DaftarProduk(
                 modifier = modifier,
                 navController = navController,
-                barangViewModel = barangViewModel
+                barangViewModel = barangViewModel,
+                userViewModel = userViewModel
             )
         }
 
@@ -259,7 +261,8 @@ fun AppNavigation(
             ProdukTerjual(
                 modifier = modifier,
                 navController = navController,
-                barangViewModel = barangViewModel
+                barangViewModel = barangViewModel,
+                userViewModel = userViewModel
             )
         }
 
@@ -344,7 +347,8 @@ fun AppNavigation(
                     DetailProduk(
                         barang = barang,
                         modifier = modifier,
-                        navController = navController
+                        navController = navController,
+                        userViewModel = userViewModel
                     )
                 }
                 else -> {

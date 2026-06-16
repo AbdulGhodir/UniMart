@@ -26,10 +26,17 @@ import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,11 +52,23 @@ import coil.compose.AsyncImage
 import com.blockbusteruwu.unimart.R
 import com.blockbusteruwu.unimart.formatRibuan
 import component.viewmodel.DetailProdukViewModel
+import component.viewmodel.UserViewModel
+import kotlinx.coroutines.launch
 import model.Barang
 import model.FavoriteManager
 
 @Composable
-fun DetailProduk(barang: Barang, modifier: Modifier = Modifier, navController: NavController, viewModel: DetailProdukViewModel = viewModel()) {
+fun DetailProduk(
+    barang: Barang,
+    modifier: Modifier = Modifier,
+    navController: NavController,
+    userViewModel: UserViewModel,
+    viewModel: DetailProdukViewModel = viewModel()
+) {
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+    val isBuying by viewModel.isBuying
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -208,35 +227,56 @@ fun DetailProduk(barang: Barang, modifier: Modifier = Modifier, navController: N
         ) {
             Button(
                 onClick = {
-                    viewModel.beliSekarang(barang) {
-                        navController.navigate("isiChat/${barang.id}") {
-                            popUpTo("detailProduk/{id}") { inclusive = true }
+                    val buyerEmail = userViewModel.currentUser.value.email
+                    viewModel.beliSekarang(barang, buyerEmail) { success ->
+                        scope.launch {
+                            if (success) {
+                                snackbarHostState.showSnackbar("Pembelian berhasil! Cek riwayat pembelianmu.")
+                                navController.navigate("history") {
+                                    popUpTo("home") { inclusive = false }
+                                }
+                            } else {
+                                snackbarHostState.showSnackbar("Gagal memproses pembelian, coba lagi.")
+                            }
                         }
                     }
                 },
-                modifier = Modifier
-                    .weight(1f),
+                enabled = !isBuying,
+                modifier = Modifier.weight(1f),
                 shape = RoundedCornerShape(8.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = Color.White
                 )
             ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_message),
-                    contentDescription = "chat",
-                    modifier = Modifier
-                        .size(20.dp),
-                    tint = MaterialTheme.colorScheme.onPrimary
-                )
-
-                Spacer(modifier = Modifier.width(8.dp))
-
-                Text(
-                    text = "Ajukan COD",
-                    modifier = Modifier
-                )
+                if (isBuying) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(18.dp),
+                        color = Color.White,
+                        strokeWidth = 2.dp
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(text = "Memproses...")
+                } else {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_message),
+                        contentDescription = "chat",
+                        modifier = Modifier.size(20.dp),
+                        tint = MaterialTheme.colorScheme.onPrimary
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(text = "Ajukan COD")
+                }
             }
+        }
+
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 80.dp)
+        ) { data ->
+            Snackbar(snackbarData = data)
         }
 
         Row(

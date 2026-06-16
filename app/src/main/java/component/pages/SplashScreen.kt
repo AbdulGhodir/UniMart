@@ -51,8 +51,15 @@ fun SplashScreen(modifier: Modifier = Modifier, navController: NavController) {
     LaunchedEffect(key1 = true) {
         startAnimation = true
         delay(2500L)
-        navController.navigate("welcomePage") {
-            popUpTo("splashScreen") { inclusive = true }
+        val currentUser = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
+        if (currentUser != null) {
+            navController.navigate("home") {
+                popUpTo("splashScreen") { inclusive = true }
+            }
+        } else {
+            navController.navigate("welcomePage") {
+                popUpTo("splashScreen") { inclusive = true }
+            }
         }
     }
 
