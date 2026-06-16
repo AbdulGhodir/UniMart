@@ -9,5 +9,5 @@ data class User(
     var email: String = "",
     var noTelp: String = "",
     var isPremium: Boolean = false,
-    @DrawableRes var gambar: Int = R.drawable.ic_zap,
+    var gambar: Any = R.drawable.ic_zap,
 )

@@ -19,9 +19,9 @@ class FirestoreRepository {
             if (snapshot.isEmpty) {
                 seedInitialProducts()
                 val newSnapshot = productsCol.get().await()
-                return newSnapshot.toObjects(Barang::class.java)
+                return newSnapshot.toObjects(Barang::class.java).filter { !it.isTerjual }
             }
-            return snapshot.toObjects(Barang::class.java)
+            return snapshot.toObjects(Barang::class.java).filter { !it.isTerjual }
         } catch (e: Exception) {
             e.printStackTrace()
             return emptyList()
@@ -84,17 +84,18 @@ class FirestoreRepository {
         }
     }
 
-    suspend fun getPengajuan(email: String): PengajuanPremium? {
-        return try {
-            val doc = applicationsCol.document(email).get().await()
-            if (doc.exists()) {
-                doc.toObject(PengajuanPremium::class.java)
-            } else {
-                null
+    fun listenToPengajuan(email: String, onUpdate: (PengajuanPremium?) -> Unit) {
+        applicationsCol.document(email).addSnapshotListener { snapshot, e ->
+            if (e != null) {
+                e.printStackTrace()
+                return@addSnapshotListener
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
+            if (snapshot != null && snapshot.exists()) {
+                val pengajuan = snapshot.toObject(PengajuanPremium::class.java)
+                onUpdate(pengajuan)
+            } else {
+                onUpdate(null)
+            }
         }
     }
 

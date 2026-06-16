@@ -44,7 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.blockbusteruwu.unimart.R
-import viewmodel.UserViewModel
+import component.viewmodel.UserViewModel
 import androidx.compose.runtime.getValue
 
 @Composable
@@ -81,7 +81,9 @@ fun Profile(modifier: Modifier, navController: NavController, userViewModel: Use
                         onClick = {
                             if(isPremium){
                                 navController.navigate("statusPengajuan")
-                            } else if (isPending){
+                            } else if (isPending) {
+                                navController.navigate("statusPengajuan")
+                            } else if (isRejected) {
                                 navController.navigate("statusPengajuan")
                             } else {
                                 navController.navigate("daftarPenjual")
@@ -96,7 +98,7 @@ fun Profile(modifier: Modifier, navController: NavController, userViewModel: Use
                         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp)
                     ) {
                         Text(
-                            text = if(isPremium) "Premium" else if(isPending) "Menunggu" else "Daftar Penjual",
+                            text = if(isPremium) "Premium" else if(isPending) "Menunggu" else if(isRejected) "Ditolak" else "Daftar Penjual",
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold
                         )
@@ -183,7 +185,7 @@ fun Profile(modifier: Modifier, navController: NavController, userViewModel: Use
                     .background(Color(0x301D3F73))
                     .border(1.dp, Color(0x401D3F73), shape = RoundedCornerShape(14.dp))
                     .padding(PaddingValues(horizontal = 14.dp, vertical = 16.dp))) {
-                    if(isPending){
+                    if(isPending || isRejected){
                         Row(modifier = Modifier.fillMaxWidth().clickable {  navController.navigate("statusPengajuan")},
                             horizontalArrangement = Arrangement.spacedBy(14.dp),
                             verticalAlignment = Alignment.CenterVertically) {

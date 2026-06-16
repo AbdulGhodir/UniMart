@@ -19,7 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import viewmodel.BarangViewModel
+import component.viewmodel.BarangViewModel
 import component.ui.ColumnLayout
 
 @Composable

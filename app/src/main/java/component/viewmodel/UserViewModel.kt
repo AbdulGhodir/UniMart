@@ -1,4 +1,4 @@
-package viewmodel
+package component.viewmodel
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.State
@@ -59,17 +59,17 @@ class UserViewModel(private val repository: FirestoreRepository = FirestoreRepos
         }
     }
 
-    fun register(username: String, email: String, password: String, onComplete: (Boolean, String?) -> Unit) {
+    fun register(namaLengkap: String, username: String, email: String, password: String, onComplete: (Boolean, String?) -> Unit) {
         viewModelScope.launch {
             _isLoading.value = true
             try {
                 val result = auth.createUserWithEmailAndPassword(email, password).await()
                 if (result.user != null) {
                     val user = User(
-                        namaLengkap = username,
+                        namaLengkap = namaLengkap,
                         username = username,
                         email = email,
-                        noTelp = "08123456789",
+                        noTelp = "",
                         isPremium = false
                     )
                     val success = repository.saveUser(user)
@@ -108,7 +108,7 @@ class UserViewModel(private val repository: FirestoreRepository = FirestoreRepos
                             namaLengkap = email.substringBefore("@"),
                             username = email.substringBefore("@"),
                             email = email,
-                            noTelp = "08123456789",
+                            noTelp = "",
                             isPremium = false
                         )
                         repository.saveUser(newUser)
@@ -148,10 +148,28 @@ class UserViewModel(private val repository: FirestoreRepository = FirestoreRepos
     fun loadPengajuan(email: String) {
         viewModelScope.launch {
             try {
-                val app = repository.getPengajuan(email)
-                _pengajuan.value = app
-                if (app != null && app.status == "APPROVED" && !_currentUser.value.isPremium) {
-                    _currentUser.value = _currentUser.value.copy(isPremium = true)
+                repository.listenToPengajuan(email) { app ->
+                    _pengajuan.value = app
+                    
+                    if (app != null && app.status == "APPROVED") {
+                        if (!_currentUser.value.isPremium) {
+                            val updatedUser = _currentUser.value.copy(isPremium = true)
+                            _currentUser.value = updatedUser
+                            
+                            viewModelScope.launch {
+                                repository.saveUser(updatedUser)
+                            }
+                        }
+                    } else {
+                        if (_currentUser.value.isPremium) {
+                            val updatedUser = _currentUser.value.copy(isPremium = false)
+                            _currentUser.value = updatedUser
+                            
+                            viewModelScope.launch {
+                                repository.saveUser(updatedUser)
+                            }
+                        }
+                    }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()

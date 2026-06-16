@@ -30,7 +30,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -42,18 +41,19 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.painterResource
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.blockbusteruwu.unimart.R
 import component.ui.RowLayout
 import component.ui.SearchInput
-import viewmodel.BarangViewModel
+import component.viewmodel.BarangViewModel
+import component.viewmodel.PencarianViewModel
 
 @Composable
-fun Pencarian(modifier: Modifier, navController: NavController, barangViewModel: BarangViewModel) {
+fun Pencarian(modifier: Modifier, navController: NavController, barangViewModel: BarangViewModel, viewModel: PencarianViewModel = viewModel()) {
     var search by remember { mutableStateOf("") }
-    val posts by barangViewModel.products
 
-    val filteredBarang = posts.filter { it.nama.contains(search, ignoreCase = true) }
+    val filteredBarang = viewModel.semuaBarang.filter { it.nama.contains(search, ignoreCase = true) }
 
     Column(modifier = modifier
         .fillMaxSize()
@@ -68,21 +68,6 @@ fun Pencarian(modifier: Modifier, navController: NavController, barangViewModel:
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.spacedBy(10.dp)) {
             SearchInput(search = search, onSearchChange = { search = it })
-            LazyRow(modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically) {
-                items(listOf("Semua","Fashion","Elektronik","Makanan")) { i ->
-                    Button(onClick = { search = i },
-                        modifier = Modifier.height(36.dp),
-                        shape = RoundedCornerShape(15.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0x33FFFFFF),
-                            contentColor = Color.White),
-                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 2.dp)) {
-                        Text(text = i)
-                    }
-                }
-            }
         }
         Column(modifier = Modifier.weight(1f)
             .padding(horizontal = 14.dp, vertical = 16.dp),

@@ -1,9 +1,14 @@
 package component.pages
 
+import android.net.Uri
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,13 +41,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import component.ui.Input
-import viewmodel.UserViewModel
+import component.viewmodel.UserViewModel
 
 @Composable
 fun EditProfile(modifier: Modifier, navController: NavController, userViewModel: UserViewModel) {
@@ -52,6 +59,16 @@ fun EditProfile(modifier: Modifier, navController: NavController, userViewModel:
     var email by remember { mutableStateOf(user.email) }
     var noTelp by remember { mutableStateOf(user.noTelp) }
     val context = LocalContext.current
+
+    var imageUri by remember { mutableStateOf<Uri?>(null) }
+
+    val launcherGaleri = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uriTerpilih ->
+        if (uriTerpilih != null) {
+            imageUri = uriTerpilih
+        }
+    }
 
     Column(modifier = modifier.fillMaxSize()
         .background(MaterialTheme.colorScheme.background)) {
@@ -115,12 +132,24 @@ fun EditProfile(modifier: Modifier, navController: NavController, userViewModel:
                     shape = RoundedCornerShape(16.dp))
                     .border(BorderStroke(2.dp, Color(0x33FFFFFF)), shape = RoundedCornerShape(16.dp)),
                     contentAlignment = Alignment.Center) {
-                    Text(text = if (user.username.isNotEmpty()) user.username.get(0).uppercase() else "U", color = Color.White)
-                    Box(modifier = Modifier.background(Color(0x33FFFFFF), shape = CircleShape)
-                        .align(Alignment.BottomEnd)
-                        .padding(10.dp),
-                        contentAlignment = Alignment.Center) {
-                        Icon(imageVector = Icons.Default.Edit, contentDescription = "Edit", tint = Color.White, modifier = Modifier.size(16.dp))
+                    if (imageUri != null) {
+                        AsyncImage(model = imageUri, contentDescription = "Foto Profil", contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize().clickable {
+                            launcherGaleri.launch(
+                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                            )
+                        })
+                    } else {
+                        Text(text = if (user.username.isNotEmpty()) user.username.get(0).uppercase() else "U", color = Color.White)
+                        Box(modifier = Modifier.background(Color(0x33FFFFFF), shape = CircleShape)
+                            .align(Alignment.BottomEnd)
+                            .padding(10.dp),
+                            contentAlignment = Alignment.Center) {
+                            Icon(imageVector = Icons.Default.Edit, contentDescription = "Edit", tint = Color.White, modifier = Modifier.size(16.dp).clickable{
+                                launcherGaleri.launch(
+                                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                )
+                            })
+                        }
                     }
                 }
                 Text(text = "ketuk untuk ganti profil anda", fontSize = 12.sp, color = Color(0x80FFFFFF))

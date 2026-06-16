@@ -1,5 +1,8 @@
 package component.viewmodel
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -11,63 +14,59 @@ import kotlinx.coroutines.launch
 
 class JualBarangViewModel: ViewModel() {
     var isLoading by mutableStateOf(false)
-        private set
+    var errorMessage by mutableStateOf<String?>(null)
+    var isSuccess by mutableStateOf(false)
+
     var namaBarang by mutableStateOf("")
-        private set
     var hargaBarang by mutableStateOf("")
-        private set
     var deskripsiBarang by mutableStateOf("")
-        private set
-    var kategoriBarang by mutableStateOf("")
-        private set
-    var statusBarang by mutableStateOf("")
-        private set
 
-    fun onNamaChange(newValue: String) {
-        namaBarang = newValue
-    }
-    fun onHargaChange(newValue: String) {
-        hargaBarang = newValue
-    }
-    fun onDeskripsiChange(newValue: String) {
-        deskripsiBarang = newValue
-    }
-    fun onKategoriChange(newValue: String) {
-        kategoriBarang = newValue
-    }
-    fun onStatusChange(newValue: String) {
-        statusBarang = newValue
-    }
+    val daftarKategori = listOf("Makanan", "Minuman", "Pakaian", "Aksesoris", "Buku", "Perlengkapan", "Perawatan", "Elektronik")
+    var kategoriBarang by mutableStateOf(daftarKategori[0])
 
-    fun uploadBarang(onSuccess: () -> Unit, onError: (String) -> Unit) {
+    val daftarStatus = listOf("Baru", "Prelove")
+    var statusBarang by mutableStateOf(daftarStatus[0])
 
+    var imageUri by mutableStateOf<Uri?>(null)
+
+    fun uploadBarang(barangViewModel: BarangViewModel, userViewModel: UserViewModel) {
         if (namaBarang.isBlank() || hargaBarang.isBlank() || deskripsiBarang.isBlank()) {
-            onError("Harap isi semua kolom")
+            errorMessage = "Semua kolom wajib diisi!"
             return
         }
 
-        viewModelScope.launch {
-            isLoading = true
+        isLoading = true
+        errorMessage = null
 
-            try {
-                delay(2000)
-
-                resetForm()
-                onSuccess()
-            } catch (e: Exception) {
-                onError("Gagal mengunggah barang: ${e.message}")
-
-            } finally {
-                isLoading = false
+        val harga = hargaBarang.toIntOrNull() ?: 0
+        val gambar = "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_t.png"
+        val sellerId = userViewModel.currentUser.value.email
+        barangViewModel.addProduct(
+            nama = namaBarang,
+            harga = harga,
+            deskripsi = deskripsiBarang,
+            kategori = kategoriBarang,
+            gambar = gambar,
+            status = statusBarang,
+            sellerId = sellerId
+        ) { success ->
+            if (success) {
+                isSuccess = true
+            } else {
+                errorMessage = "Gagal mengunggah barang"
             }
         }
     }
 
-    private fun resetForm() {
+    fun resetForm() {
         namaBarang = ""
         hargaBarang = ""
         deskripsiBarang = ""
-        kategoriBarang = "Makanan"
-        statusBarang = "Baru"
+        kategoriBarang = daftarKategori[0]
+        statusBarang = daftarStatus[0]
+    }
+
+    fun resetError() {
+        errorMessage = null
     }
 }

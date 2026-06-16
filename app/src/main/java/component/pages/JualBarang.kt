@@ -1,5 +1,8 @@
 package component.pages
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -9,6 +12,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,6 +20,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -25,13 +30,16 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,261 +56,268 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.blockbusteruwu.unimart.R
 import component.ui.DropdownInput
 import component.ui.Input
-import component.viewmodel.JualBarangViewModel
-import kotlinx.coroutines.launch
 
-import viewmodel.BarangViewModel
-import viewmodel.UserViewModel
+import component.viewmodel.BarangViewModel
+import component.viewmodel.JualBarangViewModel
+import component.viewmodel.UserViewModel
+import kotlinx.coroutines.delay
 
 @Composable
-fun JualBarang(modifier: Modifier = Modifier, navController: NavController, barangViewModel: BarangViewModel, userViewModel: UserViewModel) {
+fun JualBarang(modifier: Modifier = Modifier, navController: NavController, barangViewModel: BarangViewModel, userViewModel: UserViewModel, viewModel: JualBarangViewModel = viewModel()) {
     val context = androidx.compose.ui.platform.LocalContext.current
-    var namaBarang by remember { mutableStateOf("") }
-    var hargaBarang by remember { mutableStateOf("") }
-    var deskripsiBarang by remember { mutableStateOf("") }
-    val daftarKategori = listOf("Makanan", "Minuman", "Pakaian", "Aksesoris", "Buku", "Perlengkapan", "Perawatan", "Elektronik")
-    var kategori by remember { mutableStateOf(daftarKategori[0]) }
-    var status by remember { mutableStateOf("Baru") }
+    val snackbarHostState = remember { SnackbarHostState() }
 
-    Column (
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-    ) {
-        Column(
-            modifier = Modifier
-                .weight(1f),
-            verticalArrangement = Arrangement.spacedBy(5.dp)
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.primary)
-                    .padding(horizontal = 14.dp, vertical = 20.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(7.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Close,
-                    contentDescription = "back",
-                    modifier = Modifier
-                        .size(24.dp)
-                        .clickable { navController.popBackStack() }
-                        .offset(x = (-3).dp),
-                    tint = MaterialTheme.colorScheme.onPrimary,
-                )
+    LaunchedEffect(viewModel.errorMessage) {
+        viewModel.errorMessage?.let { pesanError ->
+            snackbarHostState.showSnackbar(pesanError)
+            viewModel.resetError()
+        }
+    }
 
-                Text(text = "Jual Barang", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimary)
+    LaunchedEffect(viewModel.isSuccess) {
+        if (viewModel.isSuccess) {
+            snackbarHostState.showSnackbar("Barang berhasil diupload!")
+            delay(300)
+            viewModel.resetForm()
+            navController.navigate("kelolaProduk") {
+                popUpTo("jualProduk") { inclusive = true }
             }
+        }
+    }
 
+    val launcherGaleri = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uriTerpilih ->
+        if (uriTerpilih != null) {
+            viewModel.imageUri = uriTerpilih
+        }
+    }
+
+    Box {
+        Column (
+            modifier = modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+        ) {
             Column(
                 modifier = Modifier
-                    .fillMaxHeight()
-                    .verticalScroll(rememberScrollState())
-                    .padding(14.dp, 16.dp),
-                verticalArrangement = Arrangement.spacedBy(20.dp)
+                    .weight(1f),
+                verticalArrangement = Arrangement.spacedBy(5.dp)
             ) {
-                Card(
+                Row(
                     modifier = Modifier
-                        .fillMaxWidth(),
-                    shape = RoundedCornerShape(14.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = Color.White
-                    ),
-                    elevation = CardDefaults.cardElevation(
-                        defaultElevation = 3.dp
-                    )
+                        .fillMaxWidth()
+                        .background(MaterialTheme.colorScheme.primary)
+                        .padding(horizontal = 14.dp, vertical = 20.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(7.dp)
                 ) {
-                    Column(
+                    Icon(
+                        imageVector = Icons.Filled.Close,
+                        contentDescription = "back",
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Text(text = "Foto Produk", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                            .size(24.dp)
+                            .clickable { navController.popBackStack() }
+                            .offset(x = (-3).dp),
+                        tint = MaterialTheme.colorScheme.onPrimary,
+                    )
 
-                        Row(
+                    Text(text = "Jual Barang", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimary)
+                }
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .verticalScroll(rememberScrollState())
+                        .padding(14.dp, 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(20.dp)
+                ) {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        shape = RoundedCornerShape(14.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color.White
+                        ),
+                        elevation = CardDefaults.cardElevation(
+                            defaultElevation = 3.dp
+                        )
+                    ) {
+                        Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(IntrinsicSize.Min),
-                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                                .padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            Column(
+                            Text(text = "Foto Produk", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+
+                            Row(
                                 modifier = Modifier
-                                    .weight(1f)
-                                    .fillMaxHeight()
-                                    .clip(RoundedCornerShape(10.dp))
-                                    .background(MaterialTheme.colorScheme.background)
-                                    .border(2.dp, MaterialTheme.colorScheme.secondary, shape = RoundedCornerShape(10.dp)),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Center
+                                    .fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(10.dp)
                             ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_camera),
-                                    contentDescription = "camera",
+                                Column(
                                     modifier = Modifier
-                                        .size(24.dp),
-                                    tint = MaterialTheme.colorScheme.secondary,
+                                        .weight(1f)
+                                        .clickable {
+                                            launcherGaleri.launch(
+                                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                            )
+                                        }
+                                        .height(100.dp)
+                                        .fillMaxHeight()
+                                        .clip(RoundedCornerShape(10.dp))
+                                        .background(MaterialTheme.colorScheme.background)
+                                        .border(2.dp, MaterialTheme.colorScheme.secondary, shape = RoundedCornerShape(10.dp)),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.Center
+                                ) {
+                                    if (viewModel.imageUri != null) {
+                                        AsyncImage(
+                                            model = viewModel.imageUri,
+                                            contentDescription = "foto produk",
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .fillMaxHeight()
+                                        )
+                                    } else {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.ic_camera),
+                                            contentDescription = "camera",
+                                            modifier = Modifier
+                                                .size(24.dp),
+                                            tint = MaterialTheme.colorScheme.secondary,
+                                        )
+
+                                        Text(text = "Tambah", color = MaterialTheme.colorScheme.secondary, fontSize = 12.sp)
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        shape = RoundedCornerShape(14.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color.White
+                        ),
+                        elevation = CardDefaults.cardElevation(
+                            defaultElevation = 3.dp
+                        )
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp ,20.dp),
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            Input(modifier = Modifier.padding(0.dp, 6.dp), label = "Nama Barang", text = viewModel.namaBarang, onValueChange = { viewModel.namaBarang = it })
+
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                            ) {
+                                DropdownInput(
+                                    modifier = Modifier
+                                        .weight(1f),
+                                    label = "Kategori",
+                                    pilihan = viewModel.daftarKategori,
+                                    selectedItem = viewModel.kategoriBarang,
+                                    onItemSelected = { viewModel.kategoriBarang = it }
                                 )
 
-                                Text(text = "Tambah", color = MaterialTheme.colorScheme.secondary, fontSize = 12.sp)
-
+                                DropdownInput(
+                                    modifier = Modifier
+                                        .weight(1f),
+                                    label = "Status",
+                                    pilihan = viewModel.daftarStatus,
+                                    selectedItem = viewModel.statusBarang,
+                                    onItemSelected = { viewModel.statusBarang = it }
+                                )
                             }
 
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_image),
-                                contentDescription = "image",
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .clip(RoundedCornerShape(10.dp))
-                                    .background(MaterialTheme.colorScheme.background)
-                                    .border(2.dp, MaterialTheme.colorScheme.outline, shape = RoundedCornerShape(10.dp))
-                                    .padding(35.dp),
-                                tint = MaterialTheme.colorScheme.onSecondary,
-                            )
+                            Input(modifier = Modifier.padding(0.dp, 6.dp), label = "Harga", text = viewModel.hargaBarang, onValueChange = { viewModel.hargaBarang = it })
 
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_image),
-                                contentDescription = "image",
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .clip(RoundedCornerShape(10.dp))
-                                    .background(MaterialTheme.colorScheme.background)
-                                    .border(2.dp, MaterialTheme.colorScheme.outline, shape = RoundedCornerShape(10.dp))
-                                    .padding(35.dp),
-                                tint = MaterialTheme.colorScheme.onSecondary,
-                            )
+                            Column(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalAlignment = Alignment.Start,
+                                verticalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                Text(text = "DESKRIPSI", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSecondary)
+
+                                OutlinedTextField(
+                                    value = viewModel.deskripsiBarang,
+                                    onValueChange = { viewModel.deskripsiBarang = it },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(120.dp),
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        focusedContainerColor = Color.White,
+                                        unfocusedContainerColor = MaterialTheme.colorScheme.background,
+                                    ),
+                                    shape = RoundedCornerShape(14.dp),
+                                    placeholder = { Text(text = "Deskripsikan barang Anda disini...", color = MaterialTheme.colorScheme.onSecondary) }
+                                )
+                            }
                         }
                     }
                 }
+            }
 
-                Card(
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .shadow(
+                        elevation = 30.dp,
+                        spotColor = Color.Black,
+                    )
+                    .background(Color.White)
+                    .border(1.dp, MaterialTheme.colorScheme.outline)
+                    .padding(16.dp),
+            ) {
+                Button(
+                    onClick = {
+                        viewModel.uploadBarang(barangViewModel = barangViewModel, userViewModel = userViewModel)
+                    },
+                    enabled = !viewModel.isLoading,
                     modifier = Modifier
                         .fillMaxWidth(),
                     shape = RoundedCornerShape(14.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = Color.White
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
                     ),
-                    elevation = CardDefaults.cardElevation(
-                        defaultElevation = 3.dp
-                    )
+                    contentPadding = PaddingValues(16.dp),
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp ,20.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        Input(modifier = Modifier.padding(0.dp, 6.dp), label = "Nama Barang", text = namaBarang, onValueChange = { namaBarang = it })
+                    if (viewModel.isLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(20.dp),
+                            color = MaterialTheme.colorScheme.onSecondary,
+                            strokeWidth = 2.dp
+                        )
 
-                        val daftarKategori = listOf("Makanan", "Minuman", "Pakaian", "Aksesoris", "Buku", "Perlengkapan", "Perawatan", "Elektronik")
+                        Spacer(modifier = Modifier.width(8.dp))
 
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(16.dp)
-                        ) {
-                            DropdownInput(
-                                modifier = Modifier
-                                    .weight(1f),
-                                label = "Kategori",
-                                pilihan = daftarKategori,
-                                selectedItem = kategori,
-                                onItemSelected = { kategori = it }
-                            )
-
-                            DropdownInput(
-                                modifier = Modifier
-                                    .weight(1f),
-                                label = "Status",
-                                pilihan = listOf("Baru", "Prelove"),
-                                selectedItem = status,
-                                onItemSelected = { status = it }
-                            )
-                        }
-
-                        Input(modifier = Modifier.padding(0.dp, 6.dp), label = "Harga", text = hargaBarang, onValueChange = { hargaBarang = it })
-
-                        Column(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalAlignment = Alignment.Start,
-                            verticalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            Text(text = "DESKRIPSI", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSecondary)
-
-                            OutlinedTextField(
-                                value = deskripsiBarang,
-                                onValueChange = { deskripsiBarang = it },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(120.dp),
-                                colors = OutlinedTextFieldDefaults.colors(
-                                    focusedContainerColor = Color.White,
-                                    unfocusedContainerColor = MaterialTheme.colorScheme.background,
-                                ),
-                                shape = RoundedCornerShape(14.dp),
-                                placeholder = { Text(text = "Deskripsikan barang Anda disini...", color = MaterialTheme.colorScheme.onSecondary) }
-                            )
-                        }
+                        Text("Memproses...")
+                    } else {
+                        Text(text = "UPLOAD BARANG", fontSize = 16.sp, fontWeight = FontWeight.Bold)
                     }
                 }
             }
         }
 
-        Box(
+        SnackbarHost(
+            hostState = snackbarHostState,
             modifier = Modifier
-                .fillMaxWidth()
-                .shadow(
-                    elevation = 30.dp,
-                    spotColor = Color.Black,
-                )
-                .background(Color.White)
-                .border(1.dp, MaterialTheme.colorScheme.outline)
-                .padding(16.dp),
-        ) {
-            val coroutineScope = rememberCoroutineScope()
-            val snackbarHostState = remember { SnackbarHostState() }
-
-            Button(
-                onClick = {
-                    if (namaBarang.isNotEmpty() && hargaBarang.isNotEmpty()) {
-                        val harga = hargaBarang.toIntOrNull() ?: 0
-                        val gambar = "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_t.png"
-                        val sellerId = userViewModel.currentUser.value.email
-                        barangViewModel.addProduct(
-                            nama = namaBarang,
-                            harga = harga,
-                            deskripsi = deskripsiBarang,
-                            kategori = kategori,
-                            gambar = gambar,
-                            status = status,
-                            sellerId = sellerId
-                        ) { success ->
-                            if (success) {
-                                android.widget.Toast.makeText(context, "Barang berhasil ditambahkan!", android.widget.Toast.LENGTH_SHORT).show()
-                                navController.popBackStack()
-                            } else {
-                                android.widget.Toast.makeText(context, "Gagal menambahkan barang!", android.widget.Toast.LENGTH_SHORT).show()
-                            }
-                        }
-                    } else {
-                        android.widget.Toast.makeText(context, "Harap isi nama dan harga barang!", android.widget.Toast.LENGTH_SHORT).show()
-                    }
-                },
-                modifier = Modifier
-                    .fillMaxWidth(),
-                shape = RoundedCornerShape(14.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary,
-                ),
-                contentPadding = PaddingValues(16.dp),
-            ) {
-                Text(text = "UPLOAD BARANG", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-            }
-        }
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 60.dp)
+        )
     }
 }

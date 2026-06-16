@@ -19,7 +19,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -30,7 +29,6 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
@@ -39,9 +37,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -52,7 +47,6 @@ import com.blockbusteruwu.unimart.ui.theme.PrimaryColor
 import com.blockbusteruwu.unimart.ui.theme.UniMartTheme
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import api.RetrofitClient
 import component.pages.DaftarObrolan
 import component.pages.DaftarPenjual
 import java.text.NumberFormat
@@ -75,9 +69,8 @@ import component.pages.DaftarProduk
 import component.pages.IsiChat
 import component.pages.ProdukTerjual
 import component.pages.StatusPengajuan
-import model.Barang
-import viewmodel.BarangViewModel
-import viewmodel.UserViewModel
+import component.viewmodel.BarangViewModel
+import component.viewmodel.UserViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -97,7 +90,7 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentRoute = navBackStackEntry?.destination?.route ?: "splashScreen"
-                val noNavBar = listOf("splashScreen", "welcomePage", "login", "register", "daftarObrolan", "detailProduk/{id}", "favorite", "jualProduk, statusPengajuan")
+                val noNavBar = listOf("splashScreen", "welcomePage", "login", "register", "daftarObrolan", "detailProduk/{id}", "favorite", "jualProduk", "daftarPenjual", "statusPengajuan", "isiChat", "isiChat/{id}")
 
                 val barangViewModel: BarangViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
                 val userViewModel: UserViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
@@ -109,7 +102,29 @@ class MainActivity : ComponentActivity() {
                     floatingActionButton = {
                         if (currentRoute !in noNavBar){
                             FloatingActionButton(
-                                onClick = { navController.navigate("jualProduk")  },
+                                onClick = {
+                                    if (userViewModel.currentUser.value.isPremium) {
+                                        navController.navigate("jualProduk") {
+                                            popUpTo(navController.graph.startDestinationId) { saveState = true }
+                                            launchSingleTop = true
+                                            restoreState = true
+                                        }
+                                    } else {
+                                        if (userViewModel.pengajuan.value == null) {
+                                            navController.navigate("daftarPenjual") {
+                                                popUpTo(navController.graph.startDestinationId) { saveState = true }
+                                                launchSingleTop = true
+                                                restoreState = true
+                                            }
+                                        } else {
+                                            navController.navigate("statusPengajuan") {
+                                                popUpTo(navController.graph.startDestinationId) { saveState = true }
+                                                launchSingleTop = true
+                                                restoreState = true
+                                            }
+                                        }
+                                    }
+                                },
                                 shape = CircleShape,
                                 modifier = Modifier
                                     .size(60.dp)
@@ -283,6 +298,33 @@ fun AppNavigation(
                 modifier = modifier,
                 navController = navController
             )
+        }
+
+        composable("isiChat/{id}") { backStackEntry ->
+            val idProduk = backStackEntry.arguments?.getString("id")
+            val barang = barangViewModel.products.value.find { it.id.toString() == idProduk }
+
+            when {
+                barang != null -> {
+                    IsiChat(
+                        barang = barang,
+                        modifier = modifier,
+                        navController = navController
+                    )
+                }
+                else -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "Data Produk Tidak Ditemukan! ID: $idProduk",
+                            fontSize = 26.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+            }
         }
 
         composable("statusPengajuan"){

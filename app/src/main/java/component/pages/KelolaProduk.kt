@@ -32,7 +32,6 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,23 +45,21 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.blockbusteruwu.unimart.R
 import com.blockbusteruwu.unimart.formatRibuan
 import component.ui.SearchInput
-import model.Barang
-import viewmodel.BarangViewModel
+import component.viewmodel.BarangViewModel
+import component.viewmodel.KelolaProdukViewModel
 
 @Composable
-fun KelolaProduk(modifier: Modifier = Modifier, navController: NavController, barangViewModel: BarangViewModel) {
+fun KelolaProduk(modifier: Modifier = Modifier, navController: NavController, barangViewModel: BarangViewModel, viewModel: KelolaProdukViewModel = viewModel()) {
     val context = androidx.compose.ui.platform.LocalContext.current
     var search by remember { mutableStateOf("") }
-    val posts by barangViewModel.products
-    val isLoading by barangViewModel.isLoading
 
-
-    val filteredBarang = posts.filter { it.nama.contains(search, ignoreCase = true) }
+    val filteredBarang = viewModel.produkSaya.filter { it.nama.contains(search, ignoreCase = true) }
 
     Column(modifier = modifier.fillMaxSize()
         .background(MaterialTheme.colorScheme.background)) {
@@ -123,7 +120,7 @@ fun KelolaProduk(modifier: Modifier = Modifier, navController: NavController, ba
             }
             Spacer(modifier = Modifier.height(10.dp))
 
-            if(isLoading) {
+            if(viewModel.isLoading) {
                 Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     CircularProgressIndicator()
                     Text(text = "Memuat Data...", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSecondary)
@@ -180,6 +177,7 @@ fun KelolaProduk(modifier: Modifier = Modifier, navController: NavController, ba
                                                             barangViewModel.deleteProduct(barang.id) { success ->
                                                                 if (success) {
                                                                     android.widget.Toast.makeText(context, "Produk berhasil dihapus!", android.widget.Toast.LENGTH_SHORT).show()
+                                                                    viewModel.getDataProdukSaya()
                                                                 } else {
                                                                     android.widget.Toast.makeText(context, "Gagal menghapus produk!", android.widget.Toast.LENGTH_SHORT).show()
                                                                 }

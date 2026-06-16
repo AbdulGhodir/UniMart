@@ -11,13 +11,10 @@ import repository.FirestoreRepository
 
 class DashboardViewModel(private val repository: FirestoreRepository = FirestoreRepository()) : ViewModel() {
     var dataBarang by mutableStateOf<List<Barang>>(emptyList())
-        private set
 
     var barangMurah by mutableStateOf<List<Barang>>(emptyList())
-        private set
 
     var isLoading by mutableStateOf(true)
-        private set
 
     init {
         getDataBarang()

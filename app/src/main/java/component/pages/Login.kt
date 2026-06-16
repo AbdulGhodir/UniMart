@@ -16,22 +16,37 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.blockbusteruwu.unimart.R
-import viewmodel.UserViewModel
+import component.viewmodel.LoginViewModel
+import component.viewmodel.UserViewModel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 @Composable
-fun Login(modifier: Modifier = Modifier, navController: NavController, userViewModel: UserViewModel) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var isLoading by remember { mutableStateOf(false) }
-    val coroutineScope = rememberCoroutineScope()
+fun Login(modifier: Modifier = Modifier, navController: NavController, userViewModel: UserViewModel, viewModel: LoginViewModel = viewModel()) {
     val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(viewModel.errorMessage) {
+        viewModel.errorMessage?.let { pesanError ->
+            snackbarHostState.showSnackbar(pesanError)
+            viewModel.resetError()
+        }
+    }
+
+    LaunchedEffect(viewModel.isSuccess) {
+        if (viewModel.isSuccess) {
+            snackbarHostState.showSnackbar("Login berhasil!")
+            delay(400)
+            navController.navigate("home") {
+                popUpTo("login") { inclusive = true }
+            }
+        }
+    }
 
     Box(
         modifier = modifier
@@ -73,8 +88,8 @@ fun Login(modifier: Modifier = Modifier, navController: NavController, userViewM
 
             Column(verticalArrangement = Arrangement.spacedBy(15.dp)) {
                 TextField(
-                    value = email,
-                    onValueChange = { email = it },
+                    value = viewModel.email,
+                    onValueChange = { viewModel.email = it },
                     modifier = Modifier
                         .fillMaxWidth()
                         .shadow(
@@ -102,8 +117,8 @@ fun Login(modifier: Modifier = Modifier, navController: NavController, userViewM
                 )
 
                 TextField(
-                    value = password,
-                    onValueChange = { password = it },
+                    value = viewModel.password,
+                    onValueChange = { viewModel.password = it },
                     modifier = Modifier
                         .fillMaxWidth()
                         .shadow(
@@ -121,14 +136,21 @@ fun Login(modifier: Modifier = Modifier, navController: NavController, userViewM
                         )
                     },
                     trailingIcon = {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_eye),
-                            contentDescription = null,
-                            modifier = Modifier.size(20.dp)
-                        )
+                        val image = if (viewModel.passwordVisible) painterResource(id = R.drawable.ic_eye) else painterResource(id = R.drawable.ic_eye_off)
+                        val description = if (viewModel.passwordVisible) "Sembunyikan password" else "Tampilkan password"
+
+                        IconButton(onClick = {
+                            viewModel.togglePasswordVisibility()
+                        }) {
+                            Icon(
+                                painter = image,
+                                contentDescription = description,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
                     },
                     label = { Text("Password") },
-                    visualTransformation = PasswordVisualTransformation(),
+                    visualTransformation = if (viewModel.passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = MaterialTheme.colorScheme.background,
@@ -154,29 +176,9 @@ fun Login(modifier: Modifier = Modifier, navController: NavController, userViewM
 
             Button(
                 onClick = {
-                    if (email.isEmpty() || password.isEmpty()) {
-                        coroutineScope.launch {
-                            snackbarHostState.showSnackbar("Email dan password tidak boleh kosong!")
-                        }
-                        return@Button
-                    }
-                    isLoading = true
-                    userViewModel.login(email, password) { success, errorMsg ->
-                        isLoading = false
-                        coroutineScope.launch {
-                            if (success) {
-                                snackbarHostState.showSnackbar("Login berhasil!")
-                                delay(1000)
-                                navController.navigate("home") {
-                                    popUpTo("login") { inclusive = true }
-                                }
-                            } else {
-                                snackbarHostState.showSnackbar(errorMsg ?: "Login gagal!")
-                            }
-                        }
-                    }
+                    viewModel.loginAkun(userViewModel)
                 },
-                enabled = !isLoading,
+                enabled = !viewModel.isLoading,
                 modifier = Modifier.fillMaxWidth(),
                 contentPadding = PaddingValues(vertical = 15.dp),
                 shape = RoundedCornerShape(10.dp),
@@ -184,7 +186,7 @@ fun Login(modifier: Modifier = Modifier, navController: NavController, userViewM
                     containerColor = MaterialTheme.colorScheme.primary
                 )
             ) {
-                if (isLoading) {
+                if (viewModel.isLoading) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(20.dp),
                         color = MaterialTheme.colorScheme.onSecondary,

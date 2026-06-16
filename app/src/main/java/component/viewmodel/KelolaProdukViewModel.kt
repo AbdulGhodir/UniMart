@@ -6,10 +6,12 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import api.RetrofitClient
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 import model.Barang
+import repository.FirestoreRepository
 
-class KelolaProdukViewModel : ViewModel() {
+class KelolaProdukViewModel(private val repository: FirestoreRepository = FirestoreRepository()) : ViewModel() {
     var produkSaya by mutableStateOf<List<Barang>>(emptyList())
         private set
 
@@ -20,13 +22,19 @@ class KelolaProdukViewModel : ViewModel() {
         getDataProdukSaya()
     }
 
-    private fun getDataProdukSaya() {
+    fun getDataProdukSaya() {
         viewModelScope.launch {
             try {
                 isLoading = true
-                produkSaya = RetrofitClient.instance.getPosts()
-                isLoading = false
+                val currentUser = FirebaseAuth.getInstance().currentUser
+                val SellerId = currentUser?.email ?: ""
+
+                val semuaProduk = repository.getProducts()
+
+                produkSaya = semuaProduk.filter { it.sellerId == SellerId }
             } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
                 isLoading = false
             }
         }

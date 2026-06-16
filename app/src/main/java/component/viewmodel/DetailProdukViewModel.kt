@@ -9,10 +9,10 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import model.Barang
 import model.FavoriteManager
+import repository.FirestoreRepository
 
-class DetailProdukViewModel : ViewModel() {
+class DetailProdukViewModel(private val repository: FirestoreRepository = FirestoreRepository()) : ViewModel() {
     var isBuying by mutableStateOf(false)
-        private set
 
     fun toggleFavorite(barang: Barang) {
         FavoriteManager.toggleFavorit(barang = barang)
@@ -22,10 +22,10 @@ class DetailProdukViewModel : ViewModel() {
         viewModelScope.launch {
             isBuying = true
 
-            delay(1000)
+            barang.isTerjual = true
+            repository.updateProduct(barang)
 
             isBuying = false
-
             onNavigate()
         }
     }

@@ -21,8 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.blockbusteruwu.unimart.R
-import viewmodel.UserViewModel
-import kotlinx.coroutines.launch
+import component.viewmodel.UserViewModel
 
 @Composable
 fun DaftarPenjual(

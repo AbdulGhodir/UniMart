@@ -43,4 +43,9 @@ data class Barang(
     @get:PropertyName("sellerId")
     @PropertyName("sellerId")
     val sellerId: String = "",
+
+    @SerializedName("isTerjual")
+    @get:PropertyName("isTerjual")
+    @PropertyName("isTerjual")
+    var isTerjual: Boolean = false
 )

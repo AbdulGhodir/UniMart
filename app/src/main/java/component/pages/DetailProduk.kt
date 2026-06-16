@@ -6,7 +6,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -48,7 +47,6 @@ import com.blockbusteruwu.unimart.formatRibuan
 import component.viewmodel.DetailProdukViewModel
 import model.Barang
 import model.FavoriteManager
-import model.UserSource
 
 @Composable
 fun DetailProduk(barang: Barang, modifier: Modifier = Modifier, navController: NavController, viewModel: DetailProdukViewModel = viewModel()) {
@@ -195,20 +193,6 @@ fun DetailProduk(barang: Barang, modifier: Modifier = Modifier, navController: N
                             Text(text = "Seller", color = MaterialTheme.colorScheme.onSecondary, fontSize = 14.sp, fontWeight = FontWeight.Medium)
                         }
                     }
-
-                    Button(
-                        onClick = { },
-                        shape = CircleShape,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.White,
-                            contentColor = MaterialTheme.colorScheme.secondary
-                        ),
-                        contentPadding = PaddingValues(10.dp, 2.dp),
-                        modifier = Modifier
-                            .border(1.dp, MaterialTheme.colorScheme.secondary, shape = CircleShape),
-                    ) {
-                        Text(text = "Kunjungi", fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                    }
                 }
             }
         }
@@ -225,7 +209,9 @@ fun DetailProduk(barang: Barang, modifier: Modifier = Modifier, navController: N
             Button(
                 onClick = {
                     viewModel.beliSekarang(barang) {
-                        navController.navigate("daftarObrolan")
+                        navController.navigate("isiChat/${barang.id}") {
+                            popUpTo("detailProduk/{id}") { inclusive = true }
+                        }
                     }
                 },
                 modifier = Modifier

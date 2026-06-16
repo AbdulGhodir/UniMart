@@ -38,11 +38,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
 import com.blockbusteruwu.unimart.R
 import com.blockbusteruwu.unimart.ui.theme.UniMartTheme
+import model.Barang
 
 @Composable
-fun IsiChat(modifier: Modifier = Modifier, navController: NavController) {
+fun IsiChat(modifier: Modifier = Modifier, navController: NavController, barang: Barang? = null) {
     var textInput by remember { mutableStateOf("") }
 
     Column(
@@ -119,16 +121,27 @@ fun IsiChat(modifier: Modifier = Modifier, navController: NavController) {
                 )
             }
 
-            KartuProduk()
+            if (barang != null) {
+                KartuProduk(barang = barang)
+                Pengirim(
+                    pesan = "Halo kak, apakah barang ini bisa COD?",
+                    waktu = "10:00"
+                )
 
-            Pengirim(
-                pesan = "Halo kak, apakah barang ini bisa COD?",
-                waktu = "10:00"
-            )
+                Penerima(
+                    pesan = "Halo! Bisa banget kak, silakan langsung di-checkout menggunakan metode COD ya."
+                )
+            } else {
+                Pengirim(
+                    pesan = "Halo kak, apakah bisa nego COD?",
+                    waktu = "10:00"
+                )
 
-            Penerima(
-                pesan = "Halo! Bisa banget kak, silakan langsung di-checkout menggunakan metode COD ya."
-            )
+                Penerima(
+                    pesan = "Halo! Bisa banget kak, mau berapa ya."
+                )
+            }
+
         }
 
         Row(
@@ -224,7 +237,7 @@ fun Penerima(pesan: String) {
 }
 
 @Composable
-fun KartuProduk() {
+fun KartuProduk(barang: Barang) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -247,8 +260,8 @@ fun KartuProduk() {
                     .clip(RoundedCornerShape(6.dp))
                     .background(Color.LightGray)
             ){
-                Image(
-                    painter = painterResource(id = R.drawable.img_barang1),
+                AsyncImage(
+                    model = barang.gambar,
                     contentDescription = "Foto Produk",
                     modifier = Modifier.fillMaxSize()
                 )
@@ -256,7 +269,7 @@ fun KartuProduk() {
             Spacer(modifier = Modifier.width(12.dp))
             Column {
                 Text(
-                    text = "Nama Produk yang Di-klik",
+                    text = barang.nama,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
                     maxLines = 1,
@@ -264,7 +277,7 @@ fun KartuProduk() {
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
-                    text = "Rp99.000",
+                    text = barang.harga.toString(),
                     fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold

@@ -8,13 +8,12 @@ import androidx.lifecycle.viewModelScope
 import api.RetrofitClient
 import kotlinx.coroutines.launch
 import model.Barang
+import repository.FirestoreRepository
 
-class PencarianViewModel : ViewModel() {
+class PencarianViewModel(private val repository: FirestoreRepository = FirestoreRepository()) : ViewModel() {
     var semuaBarang by mutableStateOf<List<Barang>>(emptyList())
-        private set
 
     var isLoading by mutableStateOf(true)
-        private set
 
     init {
         getData()
@@ -24,7 +23,7 @@ class PencarianViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 isLoading = true
-                semuaBarang = RetrofitClient.instance.getPosts()
+                semuaBarang = repository.getProducts()
                 isLoading = false
             } catch (e: Exception) {
                 isLoading = false

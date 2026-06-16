@@ -1,4 +1,4 @@
-package viewmodel
+package component.viewmodel
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.State

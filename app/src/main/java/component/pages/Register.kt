@@ -15,14 +15,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -30,11 +29,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -43,22 +39,37 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.blockbusteruwu.unimart.R
+import component.viewmodel.RegisterViewModel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import viewmodel.UserViewModel
+import component.viewmodel.UserViewModel
 
 @Composable
-fun Register(modifier: Modifier = Modifier, navController: NavController, userViewModel: UserViewModel){
-    var isLoading by remember { mutableStateOf(false) }
-    val coroutineScope = rememberCoroutineScope()
+fun Register(modifier: Modifier = Modifier, navController: NavController, viewModel: RegisterViewModel = viewModel(), userViewModel: UserViewModel){
     val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(viewModel.errorMessage) {
+        viewModel.errorMessage?.let { pesanError ->
+            snackbarHostState.showSnackbar(pesanError)
+            viewModel.resetError()
+        }
+    }
+
+    LaunchedEffect(viewModel.isSuccess) {
+        if (viewModel.isSuccess) {
+            snackbarHostState.showSnackbar("Registrasi berhasil!")
+            delay(500)
+            navController.navigate("login") {
+                popUpTo("register") { inclusive = true }
+            }
+        }
+    }
 
     Box(
         modifier = modifier
@@ -68,7 +79,7 @@ fun Register(modifier: Modifier = Modifier, navController: NavController, userVi
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 80.dp, bottom = 40.dp)
+                .padding(top = 30.dp)
                 .padding(horizontal = 30.dp),
             horizontalAlignment = Alignment.CenterHorizontally
 
@@ -89,18 +100,44 @@ fun Register(modifier: Modifier = Modifier, navController: NavController, userVi
             Column(
                 verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
-                var username by remember { mutableStateOf("") }
-                var email by remember { mutableStateOf("") }
-                var password by remember { mutableStateOf("") }
-                var confirmPassword by remember { mutableStateOf("") }
-
                 Column(
                     modifier = Modifier
                         .padding(vertical = 20.dp)
                 ) {
                     TextField(
-                        value = username,
-                        onValueChange = { username = it },
+                        value = viewModel.namaLengkap,
+                        onValueChange = { viewModel.namaLengkap = it },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .shadow(
+                                elevation = 3.dp,
+                                shape = RoundedCornerShape(10.dp),
+                                spotColor = Color.Black.copy(alpha = 0.8f),
+                                ambientColor = Color.Black.copy(alpha = 0.8f)
+
+                            ),
+                        shape = RoundedCornerShape(10.dp),
+                        leadingIcon = {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_user),
+                                contentDescription = "Nama",
+                                modifier = Modifier.size(20.dp)
+                            )
+                        },
+                        label = { Text(text = "Nama Lengkap") },
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = MaterialTheme.colorScheme.background,
+                            unfocusedContainerColor = MaterialTheme.colorScheme.background,
+                            disabledIndicatorColor = Color.Transparent,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent
+                        )
+
+                    )
+                    Spacer(modifier = Modifier.height(15.dp))
+                    TextField(
+                        value = viewModel.username,
+                        onValueChange = { viewModel.username = it },
                         modifier = Modifier
                             .fillMaxWidth()
                             .shadow(
@@ -130,8 +167,8 @@ fun Register(modifier: Modifier = Modifier, navController: NavController, userVi
                     )
                     Spacer(modifier = Modifier.height(15.dp))
                     TextField(
-                        value = email,
-                        onValueChange = { email = it },
+                        value = viewModel.email,
+                        onValueChange = { viewModel.email = it },
                         modifier = Modifier
                             .fillMaxWidth()
                             .shadow(
@@ -160,8 +197,8 @@ fun Register(modifier: Modifier = Modifier, navController: NavController, userVi
                     )
                     Spacer(modifier = Modifier.height(15.dp))
                     TextField(
-                        value = password,
-                        onValueChange = { password = it },
+                        value = viewModel.password,
+                        onValueChange = { viewModel.password = it },
                         modifier = Modifier
                             .fillMaxWidth()
                             .shadow(
@@ -179,15 +216,22 @@ fun Register(modifier: Modifier = Modifier, navController: NavController, userVi
                             )
                         },
                         trailingIcon = {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_eye),
-                                contentDescription = "seen",
-                                modifier = Modifier.size(20.dp)
-                            )
+                            val image = if (viewModel.passwordVisible) painterResource(id = R.drawable.ic_eye) else painterResource(id = R.drawable.ic_eye_off)
+                            val description = if (viewModel.passwordVisible) "Sembunyikan password" else "Tampilkan password"
+
+                            IconButton(onClick = {
+                                viewModel.togglePasswordVisibility()
+                            }) {
+                                Icon(
+                                    painter = image,
+                                    contentDescription = description,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
                         },
                         label = { Text(text = "Password") },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                        visualTransformation = PasswordVisualTransformation(),
+                        visualTransformation = if (viewModel.passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                         colors = TextFieldDefaults.colors(
                             focusedContainerColor = MaterialTheme.colorScheme.background,
                             unfocusedContainerColor = MaterialTheme.colorScheme.background,
@@ -198,8 +242,8 @@ fun Register(modifier: Modifier = Modifier, navController: NavController, userVi
                     )
                     Spacer(modifier = Modifier.height(15.dp))
                     TextField(
-                        value = confirmPassword,
-                        onValueChange = { confirmPassword = it },
+                        value = viewModel.konfirmasiPassword,
+                        onValueChange = { viewModel.konfirmasiPassword = it },
                         modifier = Modifier
                             .fillMaxWidth()
                             .shadow(
@@ -217,15 +261,22 @@ fun Register(modifier: Modifier = Modifier, navController: NavController, userVi
                             )
                         },
                         trailingIcon = {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_eye),
-                                contentDescription = "seen",
-                                modifier = Modifier.size(20.dp)
-                            )
+                            val image = if (viewModel.konfirmasiPasswordVisible) painterResource(id = R.drawable.ic_eye) else painterResource(id = R.drawable.ic_eye_off)
+                            val description = if (viewModel.konfirmasiPasswordVisible) "Sembunyikan password" else "Tampilkan password"
+
+                            IconButton(onClick = {
+                                viewModel.toggleKonfirmasiPasswordVisibility()
+                            }) {
+                                Icon(
+                                    painter = image,
+                                    contentDescription = description,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
                         },
                         label = { Text(text = "Konfirmasi Password") },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                        visualTransformation = PasswordVisualTransformation(),
+                        visualTransformation = if (viewModel.konfirmasiPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                         colors = TextFieldDefaults.colors(
                             focusedContainerColor = MaterialTheme.colorScheme.background,
                             unfocusedContainerColor = MaterialTheme.colorScheme.background,
@@ -238,42 +289,9 @@ fun Register(modifier: Modifier = Modifier, navController: NavController, userVi
 
                 Button(
                     onClick = {
-                        when {
-                            username.isEmpty() || email.isEmpty() || password.isEmpty() -> {
-                                coroutineScope.launch {
-                                    snackbarHostState.showSnackbar("Semua kolom wajib diisi!")
-                                }
-                            }
-                            password != confirmPassword -> {
-                                coroutineScope.launch {
-                                    snackbarHostState.showSnackbar("Password dan konfirmasi tidak cocok!")
-                                }
-                            }
-                            password.length < 6 -> {
-                                coroutineScope.launch {
-                                    snackbarHostState.showSnackbar("Password minimal 6 karakter!")
-                                }
-                            }
-                            else -> {
-                                isLoading = true
-                                userViewModel.register(username, email, password) { success, errorMsg ->
-                                    coroutineScope.launch {
-                                        isLoading = false
-                                        if (success) {
-                                            snackbarHostState.showSnackbar("Registrasi berhasil!")
-                                            delay(1000)
-                                            navController.navigate("login") {
-                                                popUpTo("register") { inclusive = true }
-                                            }
-                                        } else {
-                                            snackbarHostState.showSnackbar(errorMsg ?: "Registrasi gagal!")
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                        viewModel.daftarAkun(userViewModel)
                     },
-                    enabled = !isLoading,
+                    enabled = !viewModel.isLoading,
                     modifier = Modifier
                         .fillMaxWidth(),
                     contentPadding = PaddingValues(vertical = 15.dp),
@@ -283,7 +301,7 @@ fun Register(modifier: Modifier = Modifier, navController: NavController, userVi
                         contentColor = MaterialTheme.colorScheme.onPrimary
                     )
                 ) {
-                    if (isLoading) {
+                    if (viewModel.isLoading) {
                         CircularProgressIndicator(
                             modifier = Modifier.size(20.dp),
                             color = MaterialTheme.colorScheme.onSecondary,
