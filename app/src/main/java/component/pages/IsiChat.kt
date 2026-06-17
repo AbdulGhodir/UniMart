@@ -102,7 +102,7 @@ fun IsiChat(modifier: Modifier = Modifier, navController: NavController, barang:
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold
                     )
-                    if (model.UserSource.user[0].isPremium) {
+                    if (viewModel.penjual?.isPremium?: false) {
                         Text(
                             text = "Penjual Terverifikasi",
                             color = MaterialTheme.colorScheme.onPrimary,
