@@ -56,47 +56,45 @@ fun Favorite(modifier: Modifier = Modifier, navController: NavHostController, vi
             )
         }
 
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier
-                .fillMaxSize(),
-            contentPadding = PaddingValues(
-                top = 16.dp,
-                start = 16.dp,
-                end = 16.dp,
-                bottom = 16.dp
-            )
-        ) {
-            if (daftarBarangFavorite.isEmpty()) {
-                item {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_history),
-                                contentDescription = "empty history",
-                                tint = MaterialTheme.colorScheme.onSecondary,
-                                modifier = Modifier.size(64.dp)
-                            )
-                            Text(
-                                text = "Belum ada riwayat pembelian",
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = MaterialTheme.colorScheme.onSecondary
-                            )
-                            Text(
-                                text = "Produk yang kamu beli akan muncul di sini",
-                                fontSize = 13.sp,
-                                color = MaterialTheme.colorScheme.onSecondary
-                            )
-                        }
-                    }
+        if (daftarBarangFavorite.isEmpty()) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_favorite),
+                        contentDescription = "empty favorit",
+                        tint = MaterialTheme.colorScheme.onSecondary,
+                        modifier = Modifier.size(64.dp)
+                    )
+                    Text(
+                        text = "Belum ada barang yang difavoritkan",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSecondary
+                    )
+                    Text(
+                        text = "Produk yang kamu love akan muncul di sini",
+                        fontSize = 13.sp,
+                        color = MaterialTheme.colorScheme.onSecondary
+                    )
                 }
-            } else {
+            }
+        } else {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier
+                    .fillMaxSize(),
+                contentPadding = PaddingValues(
+                    top = 16.dp,
+                    start = 16.dp,
+                    end = 16.dp,
+                    bottom = 16.dp
+                )
+            ) {
                 items(daftarBarangFavorite) { barang ->
                     FavoriteCard(barang = barang)
                 }
