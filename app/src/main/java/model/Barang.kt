@@ -47,5 +47,15 @@ data class Barang(
     @SerializedName("isTerjual")
     @get:PropertyName("isTerjual")
     @PropertyName("isTerjual")
-    var isTerjual: Boolean = false
+    var isTerjual: Boolean = false,
+
+    @SerializedName("buyerId")
+    @get:PropertyName("buyerId")
+    @PropertyName("buyerId")
+    val buyerId: String = "",
+
+    @SerializedName("boughtAt")
+    @get:PropertyName("boughtAt")
+    @PropertyName("boughtAt")
+    val boughtAt: Long = 0L
 )

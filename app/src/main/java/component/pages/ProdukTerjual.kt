@@ -1,11 +1,15 @@
 package component.pages
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -14,19 +18,40 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
+import com.blockbusteruwu.unimart.R
+import com.blockbusteruwu.unimart.formatRibuan
 import component.viewmodel.BarangViewModel
-import component.ui.ColumnLayout
+import component.viewmodel.UserViewModel
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
-fun ProdukTerjual(modifier: Modifier = Modifier, navController: NavController, barangViewModel: BarangViewModel) {
-    val posts by barangViewModel.products
+fun ProdukTerjual(
+    modifier: Modifier = Modifier,
+    navController: NavController,
+    barangViewModel: BarangViewModel,
+    userViewModel: UserViewModel
+) {
+    val posts by barangViewModel.sellerProducts
     val isLoading by barangViewModel.isLoading
+    val currentUser by userViewModel.currentUser
 
+    LaunchedEffect(currentUser.email) {
+        barangViewModel.loadSellerProducts(currentUser.email)
+    }
+
+    val terjual = posts.filter { it.isTerjual }
+    val dateFormatter = SimpleDateFormat("dd MMM yyyy", Locale("id", "ID"))
 
     Column(
         modifier = modifier
@@ -36,20 +61,20 @@ fun ProdukTerjual(modifier: Modifier = Modifier, navController: NavController, b
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color(0xFF003366))
+                .background(MaterialTheme.colorScheme.primary)
                 .padding(vertical = 8.dp, horizontal = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = { navController.popBackStack() }) {
                 Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    imageVector = Icons.Default.ArrowBack,
                     contentDescription = "Kembali",
                     tint = Color.White
                 )
             }
             Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = "Daftar barang yang terjual",
+                text = "Produk Terjual (${terjual.size})",
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White
@@ -57,52 +82,88 @@ fun ProdukTerjual(modifier: Modifier = Modifier, navController: NavController, b
         }
 
         if (isLoading) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                CircularProgressIndicator()
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(text = "Memuat Data...", fontSize = 12.sp, color = Color.Gray)
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    CircularProgressIndicator()
+                    Text(text = "Memuat Data...", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSecondary)
+                }
+            }
+        } else if (terjual.isEmpty()) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(text = "Belum ada produk yang terjual", fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSecondary)
+                    Text(text = "Produk yang terjual akan tampil di sini", fontSize = 13.sp, color = MaterialTheme.colorScheme.onSecondary)
+                }
             }
         } else {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(start = 10.dp, end = 10.dp, top = 25.dp, bottom = 40.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                contentPadding = PaddingValues(start = 14.dp, end = 14.dp, top = 20.dp, bottom = 40.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                items(posts) { barang ->
-                    Column(modifier = Modifier.fillMaxWidth()) {
-                        ColumnLayout(barang = barang, navController = navController)
-
+                items(terjual) { barang ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(IntrinsicSize.Min),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        shape = RoundedCornerShape(12.dp),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
+                    ) {
                         Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 8.dp, start = 4.dp),
+                            modifier = Modifier.fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(
-                                text = "Status: ",
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Normal,
-                                color = Color.Gray
+                            AsyncImage(
+                                model = barang.gambar,
+                                contentDescription = barang.nama,
+                                placeholder = painterResource(id = R.drawable.img_barang1),
+                                error = painterResource(id = R.drawable.img_barang2),
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(topStart = 12.dp, bottomStart = 12.dp))
+                                    .width(100.dp)
+                                    .height(100.dp),
+                                contentScale = ContentScale.Crop
                             )
-                            Text(
-                                text = "Selesai Dikirim",
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color(0xFF003366)
-                            )
+                            Column(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(12.dp),
+                                verticalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                Text(text = barang.nama, fontWeight = FontWeight.Bold, fontSize = 15.sp, maxLines = 1)
+                                Text(
+                                    text = "Rp. ${barang.harga.formatRibuan()}",
+                                    color = MaterialTheme.colorScheme.primary,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                if (barang.boughtAt > 0L) {
+                                    Text(
+                                        text = "Terjual: ${dateFormatter.format(Date(barang.boughtAt))}",
+                                        fontSize = 12.sp,
+                                        color = MaterialTheme.colorScheme.onSecondary
+                                    )
+                                }
+                                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                    Text(text = "Pembeli:", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSecondary)
+                                    Text(
+                                        text = barang.buyerId.ifEmpty { "-" },
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = MaterialTheme.colorScheme.primary,
+                                        maxLines = 1
+                                    )
+                                }
+                                Box(
+                                    modifier = Modifier
+                                        .background(Color(0xFF4CAF50).copy(alpha = 0.12f), shape = RoundedCornerShape(6.dp))
+                                        .padding(horizontal = 8.dp, vertical = 2.dp)
+                                ) {
+                                    Text(text = "Terjual", fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF2E7D32))
+                                }
+                            }
                         }
-
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(1.dp)
-                                .background(Color(0xFFEEEEEE))
-                        )
                     }
                 }
             }

@@ -28,6 +28,15 @@ class UserViewModel(private val repository: FirestoreRepository = FirestoreRepos
     private val _pengajuan = mutableStateOf<PengajuanPremium?>(null)
     val pengajuan: State<PengajuanPremium?> = _pengajuan
 
+    private val _totalPesanan = mutableStateOf(0)
+    val totalPesanan: State<Int> = _totalPesanan
+
+    private val _totalProduk = mutableStateOf(0)
+    val totalProduk: State<Int> = _totalProduk
+
+    private val _totalTerjual = mutableStateOf(0)
+    val totalTerjual: State<Int> = _totalTerjual
+
     private val _isLoading = mutableStateOf(false)
     val isLoading: State<Boolean> = _isLoading
 
@@ -51,10 +60,24 @@ class UserViewModel(private val repository: FirestoreRepository = FirestoreRepos
                     repository.saveUser(_currentUser.value)
                 }
                 loadPengajuan(email)
+                loadSellerStats(email)
             } catch (e: Exception) {
                 e.printStackTrace()
             } finally {
                 _isLoading.value = false
+            }
+        }
+    }
+
+    fun loadSellerStats(email: String) {
+        viewModelScope.launch {
+            try {
+                val allSellerProducts = repository.getProductsBySeller(email)
+                _totalProduk.value = allSellerProducts.filter { !it.isTerjual }.size
+                _totalTerjual.value = allSellerProducts.filter { it.isTerjual }.size
+                _totalPesanan.value = allSellerProducts.filter { it.isTerjual }.size
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
     }
@@ -173,6 +196,18 @@ class UserViewModel(private val repository: FirestoreRepository = FirestoreRepos
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
+            }
+        }
+    }
+
+    fun getPenjualByEmail(email: String, onResult: (User?) -> Unit) {
+        viewModelScope.launch {
+            try {
+                val user = repository.getUser(email)
+                onResult(user)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                onResult(null)
             }
         }
     }

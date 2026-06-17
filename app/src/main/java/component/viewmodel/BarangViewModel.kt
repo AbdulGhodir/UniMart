@@ -12,6 +12,9 @@ class BarangViewModel(private val repository: FirestoreRepository = FirestoreRep
     private val _products = mutableStateOf<List<Barang>>(emptyList())
     val products: State<List<Barang>> = _products
 
+    private val _sellerProducts = mutableStateOf<List<Barang>>(emptyList())
+    val sellerProducts: State<List<Barang>> = _sellerProducts
+
     private val _isLoading = mutableStateOf(false)
     val isLoading: State<Boolean> = _isLoading
 
@@ -24,6 +27,19 @@ class BarangViewModel(private val repository: FirestoreRepository = FirestoreRep
             _isLoading.value = true
             try {
                 _products.value = repository.getProducts()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+    fun loadSellerProducts(sellerEmail: String) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                _sellerProducts.value = repository.getProductsBySeller(sellerEmail)
             } catch (e: Exception) {
                 e.printStackTrace()
             } finally {

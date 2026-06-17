@@ -60,6 +60,34 @@ class FirestoreRepository {
         }
     }
 
+    suspend fun getProductsByBuyer(buyerEmail: String): List<Barang> {
+        return try {
+            val snapshot = productsCol
+                .whereEqualTo("buyerId", buyerEmail)
+                .whereEqualTo("isTerjual", true)
+                .get()
+                .await()
+            snapshot.toObjects(Barang::class.java)
+                .sortedByDescending { it.boughtAt }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emptyList()
+        }
+    }
+
+    suspend fun getProductsBySeller(sellerEmail: String): List<Barang> {
+        return try {
+            val snapshot = productsCol
+                .whereEqualTo("sellerId", sellerEmail)
+                .get()
+                .await()
+            snapshot.toObjects(Barang::class.java)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emptyList()
+        }
+    }
+
     suspend fun getUser(email: String): User? {
         return try {
             val doc = usersCol.document(email).get().await()

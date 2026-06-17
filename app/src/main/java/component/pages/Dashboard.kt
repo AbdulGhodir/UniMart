@@ -148,7 +148,8 @@ fun Dashboard(
                     ) {
                         Column(
                             modifier = Modifier
-                                .weight(1f),
+                                .weight(1f)
+                                .clickable { navController.navigate("search/makanan") },
                             verticalArrangement = Arrangement.spacedBy(3.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
@@ -169,7 +170,8 @@ fun Dashboard(
 
                         Column(
                             modifier = Modifier
-                                .weight(1f),
+                                .weight(1f)
+                                .clickable { navController.navigate("search/minuman") },
                             verticalArrangement = Arrangement.spacedBy(3.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
@@ -190,7 +192,8 @@ fun Dashboard(
 
                         Column(
                             modifier = Modifier
-                                .weight(1f),
+                                .weight(1f)
+                                .clickable { navController.navigate("search/pakaian") },
                             verticalArrangement = Arrangement.spacedBy(3.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
@@ -211,7 +214,8 @@ fun Dashboard(
 
                         Column(
                             modifier = Modifier
-                                .weight(1f),
+                                .weight(1f)
+                                .clickable { navController.navigate("search/aksesoris") },
                             verticalArrangement = Arrangement.spacedBy(3.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
@@ -238,7 +242,8 @@ fun Dashboard(
                     ) {
                         Column(
                             modifier = Modifier
-                                .weight(1f),
+                                .weight(1f)
+                                .clickable { navController.navigate("search/buku") },
                             verticalArrangement = Arrangement.spacedBy(3.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
@@ -259,7 +264,8 @@ fun Dashboard(
 
                         Column(
                             modifier = Modifier
-                                .weight(1f),
+                                .weight(1f)
+                                .clickable { navController.navigate("search/perlengkapan") },
                             verticalArrangement = Arrangement.spacedBy(3.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
@@ -280,7 +286,8 @@ fun Dashboard(
 
                         Column(
                             modifier = Modifier
-                                .weight(1f),
+                                .weight(1f)
+                                .clickable { navController.navigate("search/perawatan") },
                             verticalArrangement = Arrangement.spacedBy(3.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
@@ -301,7 +308,8 @@ fun Dashboard(
 
                         Column(
                             modifier = Modifier
-                                .weight(1f),
+                                .weight(1f)
+                                .clickable { navController.navigate("search/elektronik") },
                             verticalArrangement = Arrangement.spacedBy(3.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
@@ -337,7 +345,8 @@ fun Dashboard(
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.End,
-                        color = MaterialTheme.colorScheme.primary
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.clickable { navController.navigate("search") }
                     )
                 }
 
@@ -373,13 +382,6 @@ fun Dashboard(
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold
                     )
-                    Text(
-                        text = "Lihat Semua",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.End,
-                        color = MaterialTheme.colorScheme.primary
-                    )
                 }
 
                 if (isLoading) {
@@ -392,8 +394,12 @@ fun Dashboard(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        items(postsMurah) { barang ->
-                            RowLayout(barang = barang, navController = navController)
+                        if (postsMurah.isEmpty()) {
+                            item { Text(text = "Produk < 50k sendang tidak ada") }
+                        } else {
+                            items(postsMurah) { barang ->
+                                RowLayout(barang = barang, navController = navController)
+                            }
                         }
                     }
                 }
@@ -410,13 +416,6 @@ fun Dashboard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(text = "Terakhir Dilihat", fontSize = 20.sp, fontWeight = FontWeight.Bold)
-                    Text(
-                        text = "Lihat Semua",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.End,
-                        color = MaterialTheme.colorScheme.primary
-                    )
                 }
 
                 if (isLoading) {

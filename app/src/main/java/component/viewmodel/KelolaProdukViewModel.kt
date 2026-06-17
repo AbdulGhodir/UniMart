@@ -29,9 +29,9 @@ class KelolaProdukViewModel(private val repository: FirestoreRepository = Firest
                 val currentUser = FirebaseAuth.getInstance().currentUser
                 val SellerId = currentUser?.email ?: ""
 
-                val semuaProduk = repository.getProducts()
+                val semuaProduk = repository.getProductsBySeller(SellerId)
 
-                produkSaya = semuaProduk.filter { it.sellerId == SellerId }
+                produkSaya = semuaProduk.filter { !it.isTerjual }
             } catch (e: Exception) {
                 e.printStackTrace()
             } finally {

@@ -49,7 +49,12 @@ import model.Barang
 import model.FavoriteManager
 
 @Composable
-fun DetailProduk(barang: Barang, modifier: Modifier = Modifier, navController: NavController, viewModel: DetailProdukViewModel = viewModel()) {
+fun DetailProduk(
+    barang: Barang,
+    modifier: Modifier = Modifier,
+    navController: NavController,
+    viewModel: DetailProdukViewModel = viewModel()
+) {
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -208,14 +213,9 @@ fun DetailProduk(barang: Barang, modifier: Modifier = Modifier, navController: N
         ) {
             Button(
                 onClick = {
-                    viewModel.beliSekarang(barang) {
-                        navController.navigate("isiChat/${barang.id}") {
-                            popUpTo("detailProduk/{id}") { inclusive = true }
-                        }
-                    }
+                    navController.navigate("isiChat/${barang.sellerId.ifEmpty { "UniMart Seller" }}/${barang.id}")
                 },
-                modifier = Modifier
-                    .weight(1f),
+                modifier = Modifier.weight(1f),
                 shape = RoundedCornerShape(8.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary,
@@ -225,17 +225,11 @@ fun DetailProduk(barang: Barang, modifier: Modifier = Modifier, navController: N
                 Icon(
                     painter = painterResource(id = R.drawable.ic_message),
                     contentDescription = "chat",
-                    modifier = Modifier
-                        .size(20.dp),
+                    modifier = Modifier.size(20.dp),
                     tint = MaterialTheme.colorScheme.onPrimary
                 )
-
                 Spacer(modifier = Modifier.width(8.dp))
-
-                Text(
-                    text = "Ajukan COD",
-                    modifier = Modifier
-                )
+                Text(text = "Ajukan COD")
             }
         }
 

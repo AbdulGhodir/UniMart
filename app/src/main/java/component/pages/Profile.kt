@@ -53,6 +53,14 @@ fun Profile(modifier: Modifier, navController: NavController, userViewModel: Use
     val pengajuan by userViewModel.pengajuan
     val statusPengajuan = pengajuan?.status ?: "NOT_SUBMITTED"
 
+    val totalPesanan by userViewModel.totalPesanan
+    val totalProduk by userViewModel.totalProduk
+    val totalTerjual by userViewModel.totalTerjual
+
+    androidx.compose.runtime.LaunchedEffect(user.email) {
+        userViewModel.loadSellerStats(user.email)
+    }
+
     val isPremium = user.isPremium || statusPengajuan == "APPROVED"
     val isPending = statusPengajuan == "PENDING"
     val isRejected = statusPengajuan == "REJECTED"
@@ -130,7 +138,7 @@ fun Profile(modifier: Modifier, navController: NavController, userViewModel: Use
                                 .clip(RoundedCornerShape(10.dp))
                                 .background(
                                     MaterialTheme.colorScheme.primary).padding(10.dp))
-                            Text(text = "24", fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = Color.Black)
+                            Text(text = totalPesanan.toString(), fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = Color.Black)
                             Text(text = "Pesanan", fontWeight = FontWeight.Normal, fontSize = 12.sp, color = Color(0x80000000))
                         }
                         Column(modifier = Modifier.weight(1f)
@@ -141,7 +149,7 @@ fun Profile(modifier: Modifier, navController: NavController, userViewModel: Use
                                 .clip(RoundedCornerShape(10.dp))
                                 .background(
                                     MaterialTheme.colorScheme.primary).padding(10.dp))
-                            Text(text = "24", fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = Color.Black)
+                            Text(text = totalProduk.toString(), fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = Color.Black)
                             Text(text = "Produk", fontWeight = FontWeight.Normal, fontSize = 12.sp, color = Color(0x80000000))
                         }
                         Column(modifier = Modifier.weight(1f)
@@ -152,7 +160,7 @@ fun Profile(modifier: Modifier, navController: NavController, userViewModel: Use
                                 .clip(RoundedCornerShape(10.dp))
                                 .background(
                                     MaterialTheme.colorScheme.primary).padding(10.dp))
-                            Text(text = "22", fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = Color.Black)
+                            Text(text = totalTerjual.toString(), fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = Color.Black)
                             Text(text = "Terjual", fontWeight = FontWeight.Normal, fontSize = 12.sp, color = Color(0x80000000))
                         }
                     }
@@ -283,11 +291,12 @@ fun Profile(modifier: Modifier, navController: NavController, userViewModel: Use
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
-            Button(onClick = {  navController.navigate("login") {
-                popUpTo(navController.graph.startDestinationId) { saveState = true }
-                launchSingleTop = true
-                restoreState = true
-            } }, modifier = Modifier.fillMaxWidth(),
+            Button(onClick = {
+                com.google.firebase.auth.FirebaseAuth.getInstance().signOut()
+                navController.navigate("login") {
+                    popUpTo(0) { inclusive = true }
+                }
+            }, modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0x30FF0000),
                     contentColor = Color.Red
