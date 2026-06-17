@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -21,6 +22,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import component.viewmodel.BarangViewModel
 import component.ui.ColumnLayout
+
 
 @Composable
 fun PesananMasuk(modifier: Modifier = Modifier, navController: NavController, barangViewModel: BarangViewModel) {
@@ -41,7 +43,7 @@ fun PesananMasuk(modifier: Modifier = Modifier, navController: NavController, ba
         ) {
             IconButton(onClick = { navController.popBackStack() }) {
                 Icon(
-                    imageVector = Icons.Default.ArrowBack,
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Kembali",
                     tint = Color.White
                 )

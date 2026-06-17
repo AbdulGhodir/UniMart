@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -27,6 +27,7 @@ fun ProdukTerjual(modifier: Modifier = Modifier, navController: NavController, b
     val posts by barangViewModel.products
     val isLoading by barangViewModel.isLoading
 
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -41,7 +42,7 @@ fun ProdukTerjual(modifier: Modifier = Modifier, navController: NavController, b
         ) {
             IconButton(onClick = { navController.popBackStack() }) {
                 Icon(
-                    imageVector = Icons.Default.ArrowBack,
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Kembali",
                     tint = Color.White
                 )

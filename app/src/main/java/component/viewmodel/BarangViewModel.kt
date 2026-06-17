@@ -63,17 +63,17 @@ class BarangViewModel(private val repository: FirestoreRepository = FirestoreRep
         }
     }
 
-    fun updateProduct(barang: Barang, onComplete: (Boolean) -> Unit) {
-        viewModelScope.launch {
-            _isLoading.value = true
-            val success = repository.updateProduct(barang)
-            if (success) {
-                loadProducts()
-            }
-            _isLoading.value = false
-            onComplete(success)
-        }
-    }
+//    fun updateProduct(barang: Barang, onComplete: (Boolean) -> Unit) {
+//        viewModelScope.launch {
+//            _isLoading.value = true
+//            val success = repository.updateProduct(barang)
+//            if (success) {
+//                loadProducts()
+//            }
+//            _isLoading.value = false
+//            onComplete(success)
+//        }
+//    }
 
     fun deleteProduct(id: Int, onComplete: (Boolean) -> Unit) {
         viewModelScope.launch {

@@ -23,6 +23,7 @@ import androidx.navigation.NavController
 import com.blockbusteruwu.unimart.R
 import component.viewmodel.UserViewModel
 
+
 @Composable
 fun DaftarPenjual(
     modifier: Modifier = Modifier,
@@ -38,7 +39,6 @@ fun DaftarPenjual(
     var noTelp by remember { mutableStateOf("") }
 
     var isLoading by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
 
     Column(
         modifier = modifier
