@@ -38,7 +38,7 @@ class LoginViewModel : ViewModel() {
                     errorMsg?.contains("credential is incorrect", ignoreCase = true) == true ->
                         "Email atau Password salah."
                     errorMsg?.contains("badly formatted", ignoreCase = true) == true ->
-                        "Format email tidak valid (contoh: abdul@gmail.com)."
+                        "Format email tidak valid (contoh: rafly@gmail.com)."
                     else -> errorMsg ?: "Terjadi kesalahan saat login."
                 }
             }
