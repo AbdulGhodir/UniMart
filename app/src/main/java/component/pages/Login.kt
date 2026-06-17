@@ -162,17 +162,6 @@ fun Login(modifier: Modifier = Modifier, navController: NavController, userViewM
                 )
             }
 
-
-            Text(
-                text = "Lupa Password?",
-                fontSize = 12.sp,
-                color = Color.Gray,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 10.dp),
-                textAlign = TextAlign.End
-            )
-
             Spacer(modifier = Modifier.height(30.dp))
 
             Button(
