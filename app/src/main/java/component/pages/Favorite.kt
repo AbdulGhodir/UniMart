@@ -9,16 +9,19 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.blockbusteruwu.unimart.R
 import component.ui.FavoriteCard
 import component.viewmodel.FavoriteViewModel
 
@@ -66,8 +69,37 @@ fun Favorite(modifier: Modifier = Modifier, navController: NavHostController, vi
                 bottom = 16.dp
             )
         ) {
-            items(daftarBarangFavorite) { barang ->
-                FavoriteCard(barang = barang)
+            if (daftarBarangFavorite.isEmpty()) {
+                item {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_history),
+                                contentDescription = "empty history",
+                                tint = MaterialTheme.colorScheme.onSecondary,
+                                modifier = Modifier.size(64.dp)
+                            )
+                            Text(
+                                text = "Belum ada riwayat pembelian",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.onSecondary
+                            )
+                            Text(
+                                text = "Produk yang kamu beli akan muncul di sini",
+                                fontSize = 13.sp,
+                                color = MaterialTheme.colorScheme.onSecondary
+                            )
+                        }
+                    }
+                }
+            } else {
+                items(daftarBarangFavorite) { barang ->
+                    FavoriteCard(barang = barang)
+                }
             }
         }
     }
