@@ -50,10 +50,19 @@ import component.viewmodel.BarangViewModel
 import component.viewmodel.PencarianViewModel
 
 @Composable
-fun Pencarian(modifier: Modifier, navController: NavController, barangViewModel: BarangViewModel, viewModel: PencarianViewModel = viewModel()) {
+fun Pencarian(modifier: Modifier, navController: NavController, viewModel: PencarianViewModel = viewModel(), kategori : String? = null) {
     var search by remember { mutableStateOf("") }
+    var initialKategori by remember { mutableStateOf(kategori) }
 
-    val filteredBarang = viewModel.semuaBarang.filter { it.nama.contains(search, ignoreCase = true) }
+    if (search.isNotEmpty() && initialKategori != null) {
+        initialKategori = null
+    }
+
+    val filteredBarang = if (initialKategori != null) {
+        viewModel.semuaBarang.filter { it.kategori.equals(initialKategori, ignoreCase = true) }
+    } else {
+        viewModel.semuaBarang.filter { it.nama.contains(search, ignoreCase = true) }
+    }
 
     Column(modifier = modifier
         .fillMaxSize()
@@ -73,7 +82,10 @@ fun Pencarian(modifier: Modifier, navController: NavController, barangViewModel:
             .padding(horizontal = 14.dp, vertical = 16.dp),
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            if(filteredBarang.isNotEmpty() && search.isNotEmpty()) {
+            val showGrid = (initialKategori != null && filteredBarang.isNotEmpty()) || (search.isNotEmpty() && filteredBarang.isNotEmpty())
+            val showNotFound = (initialKategori != null && filteredBarang.isEmpty()) || (search.isNotEmpty() && filteredBarang.isEmpty())
+
+            if (showGrid) {
                 LazyVerticalGrid(columns = GridCells.Fixed(2),
                     modifier = Modifier.fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -82,13 +94,14 @@ fun Pencarian(modifier: Modifier, navController: NavController, barangViewModel:
                         RowLayout(barang = i, navController = navController)
                     }
                 }
-            } else if (filteredBarang.isEmpty() && search.isNotEmpty()) {
+            } else if (showNotFound) {
+                val notFoundText = if (initialKategori != null) "Kategori \"$initialKategori\" Tidak ditemukan" else "\"$search\" Tidak ditemukan"
                 Row(modifier = Modifier.fillMaxWidth().padding(PaddingValues(vertical = 30.dp)),
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically) {
                     Icon(imageVector = Icons.Default.Search, contentDescription = "Search", tint = Color(0x801D3F73), modifier = Modifier.size(24.dp))
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = "\"${search}\" Tidak ditemukan", fontSize = 16.sp, color = Color.Gray)
+                    Text(text = notFoundText, fontSize = 16.sp, color = Color.Gray)
                 }
             } else {
                 Row(modifier = Modifier.fillMaxWidth(),

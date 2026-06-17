@@ -38,7 +38,6 @@ fun DaftarPenjual(
     var noTelp by remember { mutableStateOf("") }
 
     var isLoading by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
 
     Column(
         modifier = modifier

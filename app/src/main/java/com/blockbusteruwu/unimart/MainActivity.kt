@@ -90,7 +90,7 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentRoute = navBackStackEntry?.destination?.route ?: "splashScreen"
-                val noNavBar = listOf("splashScreen", "welcomePage", "login", "register", "daftarObrolan", "detailProduk/{id}", "favorite", "jualProduk", "daftarPenjual", "statusPengajuan", "isiChat", "isiChat/{id}")
+                val noNavBar = listOf("splashScreen", "welcomePage", "login", "register", "daftarObrolan", "detailProduk/{id}", "favorite", "jualProduk", "daftarPenjual", "statusPengajuan", "isiChat/{sellerId}/{idProduk}")
 
                 val barangViewModel: BarangViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
                 val userViewModel: UserViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
@@ -155,7 +155,7 @@ fun AppNavigation(
     modifier: Modifier,
     navController: NavHostController,
     barangViewModel: BarangViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
-    userViewModel: UserViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+    userViewModel: UserViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
 ) {
     NavHost(
         navController = navController,
@@ -202,7 +202,15 @@ fun AppNavigation(
             Pencarian(
                 modifier = modifier,
                 navController = navController,
-                barangViewModel = barangViewModel
+            )
+        }
+
+        composable("search/{kategori}") { backStackEntry ->
+            val kategori = backStackEntry.arguments?.getString("kategori")
+            Pencarian(
+                modifier = modifier,
+                navController = navController,
+                kategori = kategori
             )
         }
 
@@ -292,19 +300,15 @@ fun AppNavigation(
         composable("daftarObrolan"){
             DaftarObrolan(
                 modifier = modifier,
-                navController = navController
+                navController = navController,
+                userViewModel = userViewModel
             )
         }
 
-        composable("isiChat") {
-            IsiChat(
-                modifier = modifier,
-                navController = navController
-            )
-        }
+        composable("isiChat/{sellerId}/{idProduk}") { backStackEntry ->
+            val sellerId = backStackEntry.arguments?.getString("sellerId").toString()
+            val idProduk = backStackEntry.arguments?.getString("idProduk")
 
-        composable("isiChat/{id}") { backStackEntry ->
-            val idProduk = backStackEntry.arguments?.getString("id")
             val barang = barangViewModel.products.value.find { it.id.toString() == idProduk }
 
             when {
@@ -312,20 +316,18 @@ fun AppNavigation(
                     IsiChat(
                         barang = barang,
                         modifier = modifier,
-                        navController = navController
+                        navController = navController,
+                        sellerId = sellerId,
+                        userViewModel = userViewModel
                     )
                 }
                 else -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "Data Produk Tidak Ditemukan! ID: $idProduk",
-                            fontSize = 26.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
+                    IsiChat(
+                        modifier = modifier,
+                        navController = navController,
+                        sellerId = sellerId,
+                        userViewModel = userViewModel
+                    )
                 }
             }
         }
@@ -348,7 +350,6 @@ fun AppNavigation(
                         barang = barang,
                         modifier = modifier,
                         navController = navController,
-                        userViewModel = userViewModel
                     )
                 }
                 else -> {

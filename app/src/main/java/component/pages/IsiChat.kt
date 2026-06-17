@@ -1,9 +1,9 @@
 package component.pages
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,14 +18,21 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,146 +40,231 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.blockbusteruwu.unimart.R
-import com.blockbusteruwu.unimart.ui.theme.UniMartTheme
+import com.blockbusteruwu.unimart.formatRibuan
+import component.viewmodel.IsiChatViewModel
+import component.viewmodel.UserViewModel
+import kotlinx.coroutines.launch
 import model.Barang
 
 @Composable
-fun IsiChat(modifier: Modifier = Modifier, navController: NavController, barang: Barang? = null) {
+fun IsiChat(modifier: Modifier = Modifier, navController: NavController, barang: Barang? = null, sellerId: String, userViewModel: UserViewModel, viewModel: IsiChatViewModel = viewModel()) {
     var textInput by remember { mutableStateOf("") }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.primary)
-                .padding(horizontal = 16.dp, vertical = 10.dp),
-            verticalAlignment = Alignment.CenterVertically
+    viewModel.getDataSeller(sellerId)
+
+    Box {
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
         ) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_arrow_back),
-                contentDescription = "kembali",
+            Row(
                 modifier = Modifier
-                    .size(24.dp)
-                    .clickable { navController.popBackStack() },
-                tint = MaterialTheme.colorScheme.onPrimary,
-            )
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.primary)
+                    .padding(horizontal = 16.dp, vertical = 10.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_arrow_back),
+                    contentDescription = "kembali",
+                    modifier = Modifier
+                        .size(24.dp)
+                        .clickable { navController.popBackStack() },
+                    tint = MaterialTheme.colorScheme.onPrimary,
+                )
 
-            Spacer(modifier = Modifier.width(10.dp))
+                Spacer(modifier = Modifier.width(10.dp))
 
-            Box(
-                modifier = Modifier
-                    .size(35.dp)
-                    .clip(CircleShape)
-                    .background(Color.LightGray)
-            )
+                Box(
+                    modifier = Modifier
+                        .size(35.dp)
+                        .clip(CircleShape)
+                        .background(Color.LightGray)
+                )
+
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(horizontal = 10.dp)
+                ) {
+                    Text(
+                        text = viewModel.penjual?.namaLengkap?: sellerId,
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    if (model.UserSource.user[0].isPremium) {
+                        Text(
+                            text = "Penjual Terverifikasi",
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            fontSize = 16.sp,
+                        )
+                    }
+                }
+            }
 
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(horizontal = 10.dp)
+                    .verticalScroll(rememberScrollState())
+                    .padding(bottom = 16.dp)
             ) {
-                Text(
-                    text = model.UserSource.user[0].namaLengkap,
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                if (model.UserSource.user[0].isPremium) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
                     Text(
-                        text = "Penjual Terverifikasi",
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        fontSize = 16.sp,
+                        text = "Hari ini",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.W700,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                        modifier = Modifier
+                            .background(MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.1f), RoundedCornerShape(12.dp))
+                            .padding(horizontal = 12.dp, vertical = 4.dp)
+                    )
+                }
+
+                if (barang != null) {
+                    KartuProduk(barang = barang)
+                    Pengirim(
+                        pesan = "Halo kak, apakah barang ini bisa COD?",
+                        waktu = "10:00"
+                    )
+
+                    Penerima(
+                        pesan = "Halo! Bisa banget kak, silakan langsung di-checkout menggunakan metode COD ya."
+                    )
+                } else {
+                    Pengirim(
+                        pesan = "Halo kak, apakah bisa nego COD?",
+                        waktu = "10:00"
+                    )
+
+                    Penerima(
+                        pesan = "Halo! Bisa banget kak, mau berapa ya."
+                    )
+                }
+
+            }
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.White)
+                    .border(1.dp, MaterialTheme.colorScheme.outline)
+                    .padding(horizontal = 12.dp, vertical = 12.dp),
+            ) {
+                if (barang != null) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column {
+                            Text(
+                                text = barang.nama,
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = "Rp ${barang.harga.formatRibuan()}",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+
+                        Button(
+                            onClick = {
+                                val buyerEmail = userViewModel.currentUser.value.email
+                                viewModel.beliSekarang(barang, buyerEmail) { success ->
+                                    scope.launch {
+                                        if (success) {
+                                            snackbarHostState.showSnackbar("Pembelian berhasil! Cek riwayat pembelianmu.")
+                                            navController.navigate("history") {
+                                                popUpTo("home") { inclusive = false }
+                                            }
+                                        } else {
+                                            snackbarHostState.showSnackbar("Gagal memproses pembelian, coba lagi.")
+                                        }
+                                    }
+                                }
+                            },
+                            shape = RoundedCornerShape(16.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = Color.White
+                            ),
+                            enabled = !viewModel.isBuying
+                        ) {
+                            if (viewModel.isBuying) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(18.dp),
+                                    color = Color.White,
+                                    strokeWidth = 2.dp
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(text = "Memproses...")
+                            } else {
+                                Text(text = "Beli Sekarang")
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    OutlinedTextField(
+                        value = textInput,
+                        onValueChange = { textInput = it },
+                        placeholder = { Text("Tulis Pesan...", fontSize = 14.sp) },
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(50.dp),
+                        shape = RoundedCornerShape(24.dp)
+                    )
+
+                    Spacer(modifier = Modifier.width(12.dp))
+
+                    Text(
+                        text = "Kirim",
+                        color = if (textInput.isNotEmpty()) MaterialTheme.colorScheme.primary else Color.Gray,
+                        modifier = Modifier
+                            .clickable(enabled = textInput.isNotEmpty()) {
+                                textInput = ""
+                            },
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
                     )
                 }
             }
         }
 
-        Column(
+        SnackbarHost(
+            hostState = snackbarHostState,
             modifier = Modifier
-                .weight(1f)
-                .verticalScroll(rememberScrollState())
-                .padding(bottom = 16.dp)
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 16.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "Hari ini",
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.W700,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
-                    modifier = Modifier
-                        .background(MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.1f), RoundedCornerShape(12.dp))
-                        .padding(horizontal = 12.dp, vertical = 4.dp)
-                )
-            }
-
-            if (barang != null) {
-                KartuProduk(barang = barang)
-                Pengirim(
-                    pesan = "Halo kak, apakah barang ini bisa COD?",
-                    waktu = "10:00"
-                )
-
-                Penerima(
-                    pesan = "Halo! Bisa banget kak, silakan langsung di-checkout menggunakan metode COD ya."
-                )
-            } else {
-                Pengirim(
-                    pesan = "Halo kak, apakah bisa nego COD?",
-                    waktu = "10:00"
-                )
-
-                Penerima(
-                    pesan = "Halo! Bisa banget kak, mau berapa ya."
-                )
-            }
-
-        }
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.background)
-                .padding(horizontal = 12.dp, vertical = 12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            OutlinedTextField(
-                value = textInput,
-                onValueChange = { textInput = it },
-                placeholder = { Text("Tulis Pesan...", fontSize = 14.sp) },
-                modifier = Modifier
-                    .weight(1f)
-                    .height(50.dp),
-                shape = RoundedCornerShape(24.dp)
-            )
-
-            Spacer(modifier = Modifier.width(12.dp))
-
-            Text(
-                text = "Kirim",
-                color = if (textInput.isNotEmpty()) MaterialTheme.colorScheme.primary else Color.Gray,
-                modifier = Modifier
-                    .clickable(enabled = textInput.isNotEmpty()) {
-                        textInput = ""
-                    },
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp
-            )
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 80.dp)
+        ) { data ->
+            Snackbar(snackbarData = data)
         }
     }
 }
@@ -277,7 +369,7 @@ fun KartuProduk(barang: Barang) {
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
-                    text = barang.harga.toString(),
+                    text = "Rp ${barang.harga.formatRibuan()}",
                     fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold

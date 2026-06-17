@@ -31,9 +31,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.blockbusteruwu.unimart.R
+import component.viewmodel.UserViewModel
+import model.User
 
 @Composable
-fun DaftarObrolan(modifier: Modifier = Modifier, navController: NavController){
+fun DaftarObrolan(modifier: Modifier = Modifier, navController: NavController, userViewModel: UserViewModel){
+    val user = userViewModel.currentUser.value
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -86,7 +90,7 @@ fun DaftarObrolan(modifier: Modifier = Modifier, navController: NavController){
                     .padding(horizontal = 16.dp)
             ) {
                 for (i in 1..25) {
-                    Obrolan(navController)
+                    Obrolan(navController, user = user)
                     Spacer(modifier = Modifier
                         .height(1.dp)
                         .fillMaxWidth()
@@ -98,12 +102,12 @@ fun DaftarObrolan(modifier: Modifier = Modifier, navController: NavController){
 }
 
 @Composable
-fun Obrolan(navController: NavController){
+fun Obrolan(navController: NavController, user: User){
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
-                navController.navigate("isiChat")
+                navController.navigate("isiChat/${user.email}/${null}")
             },
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.background
@@ -129,7 +133,7 @@ fun Obrolan(navController: NavController){
                     .padding(horizontal = 10.dp)
             ) {
                 Text(
-                    text = model.UserSource.user[0].namaLengkap,
+                    text = user.namaLengkap,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
