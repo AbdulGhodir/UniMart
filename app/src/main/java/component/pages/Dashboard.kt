@@ -25,9 +25,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,9 +38,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import component.viewmodel.DashboardViewModel
 import com.blockbusteruwu.unimart.R
 import component.ui.RowLayout
-import model.Barang
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 
 
 @Composable
@@ -148,7 +142,8 @@ fun Dashboard(
                     ) {
                         Column(
                             modifier = Modifier
-                                .weight(1f),
+                                .weight(1f)
+                                .clickable { navController.navigate("search/makanan") },
                             verticalArrangement = Arrangement.spacedBy(3.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
@@ -169,7 +164,8 @@ fun Dashboard(
 
                         Column(
                             modifier = Modifier
-                                .weight(1f),
+                                .weight(1f)
+                                .clickable { navController.navigate("search/minuman") },
                             verticalArrangement = Arrangement.spacedBy(3.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
@@ -190,7 +186,8 @@ fun Dashboard(
 
                         Column(
                             modifier = Modifier
-                                .weight(1f),
+                                .weight(1f)
+                                .clickable { navController.navigate("search/pakaian") },
                             verticalArrangement = Arrangement.spacedBy(3.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
@@ -211,7 +208,8 @@ fun Dashboard(
 
                         Column(
                             modifier = Modifier
-                                .weight(1f),
+                                .weight(1f)
+                                .clickable { navController.navigate("search/aksesoris") },
                             verticalArrangement = Arrangement.spacedBy(3.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
@@ -238,7 +236,8 @@ fun Dashboard(
                     ) {
                         Column(
                             modifier = Modifier
-                                .weight(1f),
+                                .weight(1f)
+                                .clickable { navController.navigate("search/buku") },
                             verticalArrangement = Arrangement.spacedBy(3.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
@@ -259,7 +258,8 @@ fun Dashboard(
 
                         Column(
                             modifier = Modifier
-                                .weight(1f),
+                                .weight(1f)
+                                .clickable { navController.navigate("search/perlengkapan") },
                             verticalArrangement = Arrangement.spacedBy(3.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
@@ -280,7 +280,8 @@ fun Dashboard(
 
                         Column(
                             modifier = Modifier
-                                .weight(1f),
+                                .weight(1f)
+                                .clickable { navController.navigate("search/perawatan") },
                             verticalArrangement = Arrangement.spacedBy(3.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
@@ -301,7 +302,8 @@ fun Dashboard(
 
                         Column(
                             modifier = Modifier
-                                .weight(1f),
+                                .weight(1f)
+                                .clickable { navController.navigate("search/elektronik") },
                             verticalArrangement = Arrangement.spacedBy(3.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
@@ -337,7 +339,8 @@ fun Dashboard(
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.End,
-                        color = MaterialTheme.colorScheme.primary
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.clickable { navController.navigate("search") }
                     )
                 }
 
@@ -373,13 +376,6 @@ fun Dashboard(
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold
                     )
-                    Text(
-                        text = "Lihat Semua",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.End,
-                        color = MaterialTheme.colorScheme.primary
-                    )
                 }
 
                 if (isLoading) {
@@ -392,8 +388,12 @@ fun Dashboard(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        items(postsMurah) { barang ->
-                            RowLayout(barang = barang, navController = navController)
+                        if (postsMurah.isEmpty()) {
+                            item { Text(text = "Produk < 50k sendang tidak ada") }
+                        } else {
+                            items(postsMurah) { barang ->
+                                RowLayout(barang = barang, navController = navController)
+                            }
                         }
                     }
                 }
@@ -410,13 +410,6 @@ fun Dashboard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(text = "Terakhir Dilihat", fontSize = 20.sp, fontWeight = FontWeight.Bold)
-                    Text(
-                        text = "Lihat Semua",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.End,
-                        color = MaterialTheme.colorScheme.primary
-                    )
                 }
 
                 if (isLoading) {

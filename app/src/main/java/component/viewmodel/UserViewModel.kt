@@ -200,6 +200,18 @@ class UserViewModel(private val repository: FirestoreRepository = FirestoreRepos
         }
     }
 
+    fun getPenjualByEmail(email: String, onResult: (User?) -> Unit) {
+        viewModelScope.launch {
+            try {
+                val user = repository.getUser(email)
+                onResult(user)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                onResult(null)
+            }
+        }
+    }
+
     fun submitPengajuan(
         npm: String,
         fakultas: String,

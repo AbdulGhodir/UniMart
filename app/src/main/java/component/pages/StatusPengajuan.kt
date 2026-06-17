@@ -229,25 +229,5 @@ fun StatusPengajuan(modifier: Modifier = Modifier, navController: NavController,
             }
 
         }
-
-//        if(isLoading) {
-//            Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(4.dp)) {
-//                CircularProgressIndicator()
-//                Text(text = "Memuat Data...", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSecondary)
-//            }
-//        } else {
-//            LazyColumn(
-//                modifier = Modifier
-//                    .fillMaxSize(),
-//                contentPadding = PaddingValues(start = 10.dp, end = 10.dp, top = 25.dp, bottom = 40.dp),
-//                verticalArrangement = Arrangement.spacedBy(12.dp)
-//            ) {
-//                item { Text(text = "Riwayat Pembelian", fontSize = 20.sp, fontWeight = FontWeight.Bold) }
-//
-//                items(posts) { barang ->
-//                    ColumnLayout(barang = barang, navController = navController)
-//                }
-//        }
-//    }
-    } // end outer Column
-} // end StatusPengajuan
+    }
+}
