@@ -5,7 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import api.RetrofitClient
 import kotlinx.coroutines.launch
 import model.Barang
 import repository.FirestoreRepository

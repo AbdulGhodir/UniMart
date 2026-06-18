@@ -71,17 +71,8 @@ fun DaftarObrolan(modifier: Modifier = Modifier, navController: NavController, u
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier
                         .weight(1f)
-                        .padding(horizontal = 10.dp)
+                        .padding(horizontal = 10.dp, vertical = 10.dp)
                 )
-                IconButton(
-                    onClick = { }
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_hamburger_kurus),
-                        contentDescription = "pilihan",
-                        tint = MaterialTheme.colorScheme.onPrimary,
-                    )
-                }
             }
 
             Column(

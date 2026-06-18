@@ -17,7 +17,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -161,17 +160,6 @@ fun Login(modifier: Modifier = Modifier, navController: NavController, userViewM
                     )
                 )
             }
-
-
-            Text(
-                text = "Lupa Password?",
-                fontSize = 12.sp,
-                color = Color.Gray,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 10.dp),
-                textAlign = TextAlign.End
-            )
 
             Spacer(modifier = Modifier.height(30.dp))
 
